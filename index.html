@@ -54,8 +54,8 @@
     </div>
 
     <div class="menu-group">
-      <label>✨ テーマ（風景、ロボット、モンスター、顔、その他）</label>
-      <input type="text" id="theme-input" placeholder="例: 風景、ロボット、または好きな言葉(猫)">
+      <label>✨ テーマ（風景、トランプ、ロボット、顔、その他）</label>
+      <input type="text" id="theme-input" placeholder="例: トランプ、ロボット、または好きな言葉(猫)">
     </div>
 
     <div class="menu-group">
@@ -130,10 +130,14 @@
   </div>
 
   <div id="result-modal">
-    <div class="settings-content" style="text-align: center;">
+    <div class="settings-content" style="text-align: center; width: 450px;">
       <h2 id="result-title" style="border: none; font-size: 40px;">ゲーム終了！</h2>
       <p id="result-score" style="font-size: 24px; margin-bottom: 30px;">P1: 0点 - P2: 0点</p>
-      <button class="btn-play-huge" onclick="backToMenu()">ホームに戻る</button>
+      
+      <div style="display: flex; gap: 15px; justify-content: center; flex-direction: column;">
+        <button class="btn-play-huge" style="margin-bottom: 0; padding: 15px; font-size: 20px;" onclick="playAgain()">🔄 もう一度遊ぶ</button>
+        <button class="btn-settings" style="width: 100%; margin: 0; padding: 15px;" onclick="backToMenu()">🏠 ホームに戻る</button>
+      </div>
     </div>
   </div>
 
@@ -304,7 +308,6 @@
     }
 
     function closeAndSaveSettings() {
-      // UIテーマの保存と即時適用
       myUiTheme = document.getElementById('ui-theme-input').value;
       localStorage.setItem('savedUiTheme', myUiTheme);
       document.body.className = `theme-${myUiTheme}`; 
@@ -467,6 +470,16 @@
       });
     }
 
+    // ★新機能：もう一度遊ぶボタンが押された時の処理
+    function playAgain() {
+      playSound('flip');
+      document.getElementById('result-modal').style.display = 'none';
+      document.getElementById('loading-text').innerHTML = `カードをシャッフル中...<br>🔄`;
+      document.getElementById('loading-overlay').style.display = 'flex'; 
+      
+      socket.emit('play_again');
+    }
+
     socket.on('ai_status', (msg) => {
       document.getElementById('status-msg').innerText = msg;
     });
@@ -479,9 +492,45 @@
     });
 
     socket.on('update_game', (state) => {
-      const { cards, scores, currentTurn, players } = state;
+      const { cards, scores, currentTurn, players, theme } = state;
       const board = document.getElementById('game-board');
       
+      // ★新機能：「トランプ」テーマの時は自動でカジノ背景にする！
+      if (theme === 'トランプ' || theme === 'カード') {
+        document.body.className = 'theme-cards';
+      } else {
+        document.body.className = `theme-${myUiTheme}`;
+      }
+
+      // ★新機能：カードの枚数に合わせて、綺麗な長方形になるように列数を自動計算！
+      const totalCards = cards.length;
+      let cols = Math.ceil(Math.sqrt(totalCards));
+      
+      // 綺麗に割り切れる数字を探す
+      for (let i = Math.ceil(Math.sqrt(totalCards)); i <= totalCards; i++) {
+        if (totalCards % i === 0) {
+          cols = i;
+          break;
+        }
+      }
+      
+      // 横に広がりすぎないように最大列数を調整
+      if (totalCards === 12) cols = 4;
+      else if (totalCards === 16) cols = 4;
+      else if (totalCards === 20) cols = 5;
+      else if (totalCards === 24) cols = 6;
+      else if (totalCards === 30) cols = 6;
+      else if (totalCards === 36) cols = 6;
+      else if (totalCards === 40) cols = 8;
+      else if (totalCards === 42) cols = 7;
+      else if (totalCards === 50) cols = 10;
+      else if (totalCards > 50) cols = 10;
+
+      // グリッドのデザインを適用する
+      board.style.gridTemplateColumns = `repeat(${cols}, minmax(60px, 80px))`;
+      board.style.width = 'fit-content'; // 中央にギュッと寄せる
+
+
       let p1Name = "Player 1";
       if (players[0] === 'CPU') {
         p1Name = "🤖 CPU";
@@ -629,6 +678,9 @@
     });
 
     function backToMenu() {
+      // メニューに戻る時は元のテーマに戻す
+      document.body.className = `theme-${myUiTheme}`;
+      
       document.getElementById('result-modal').style.display = 'none';
       document.getElementById('game-screen').style.display = 'none';
       document.getElementById('setup-screen').style.display = 'none';

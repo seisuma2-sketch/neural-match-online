@@ -1,5 +1,5 @@
 /* =========================================
-   style.css (第10弾：超没入型ホーム画面UI / 真の完全フル展開版)
+   style.css (第11弾：画面揺れ防止＆トランプテーマ / 真の完全フル展開版)
    ========================================= */
 
 /* =========================================
@@ -109,10 +109,42 @@ body.theme-deepsea {
   --font-family: 'Courier New', Courier, monospace;
 }
 
+/* ★新設 ⑤ トランプ専用テーマ（カジノのグリーンテーブル） */
+body.theme-cards {
+  --bg-gradient: radial-gradient(circle at center, #0f5132, #002200); /* カジノグリーン */
+  --bg-pattern-color: rgba(255, 255, 255, 0.05); 
+  --text-color: #ffffff;
+  --title-glow: rgba(255, 215, 0, 0.8); /* ゴールドの輝き */
+  --title-accent-1: #ffd700; /* ゴールド */
+  --title-accent-2: #ff0000; /* レッド */
+  --glass-bg: rgba(0, 30, 0, 0.7);
+  --glass-border: rgba(255, 215, 0, 0.3);
+  --label-color: #ffd700;
+  --input-bg: rgba(0, 0, 0, 0.5);
+  --input-border: rgba(255, 215, 0, 0.4);
+  --input-focus: #ffaa00;
+  --btn-play-bg: linear-gradient(45deg, #d32f2f, #b71c1c);
+  --btn-play-glow: rgba(211, 47, 47, 0.6);
+  --btn-main-bg: linear-gradient(45deg, #1976d2, #0d47a1);
+  --btn-cpu-bg: linear-gradient(45deg, #388e3c, #1b5e20);
+  --btn-local-bg: linear-gradient(45deg, #7b1fa2, #4a148c);
+  --btn-settings-bg: rgba(255, 215, 0, 0.1);
+  --card-bg: repeating-linear-gradient(45deg, #b71c1c, #b71c1c 10px, #d32f2f 10px, #d32f2f 20px); /* トランプの裏面風 */
+  --modal-glass-bg: rgba(0, 20, 0, 0.95);
+  --modal-glow: rgba(255, 215, 0, 0.4);
+  --font-family: 'Georgia', serif;
+}
+
 
 /* =========================================
    1. 全体の基本設定と動く背景
    ========================================= */
+/* ★重要：画面の揺れを防ぐための設定（overflow-y: scroll） */
+html {
+  overflow-y: scroll; 
+  overflow-x: hidden;
+}
+
 body { 
   font-family: var(--font-family); 
   text-align: center; 
@@ -120,12 +152,12 @@ body {
   background-attachment: fixed;
   color: var(--text-color); 
   margin: 0; 
-  padding: 0; 
+  padding: 20px; 
   min-height: 100vh;
+  box-sizing: border-box;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden; 
   transition: background 0.8s ease, color 0.8s ease;
 }
 
@@ -176,12 +208,13 @@ body {
   border-radius: 25px; 
   display: inline-block; 
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); 
-  width: 450px; 
-  max-width: 90%;
+  width: 100%; /* 横幅を最適化 */
+  max-width: 600px; /* PCでは広めに */
   animation: fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1); 
   transition: all 0.5s ease;
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .glass-container::before {
@@ -219,13 +252,13 @@ body {
 }
 
 /* =========================================
-   3. タイトルロゴのデザイン（超強化！）
+   3. タイトルロゴのデザイン
    ========================================= */
 .main-title {
   font-size: 48px;
   font-weight: 900;
   letter-spacing: 4px;
-  line-height: 1;
+  line-height: 1.2;
   margin-bottom: 10px;
   text-transform: uppercase;
   text-shadow: 
@@ -262,7 +295,7 @@ body {
 }
 
 /* =========================================
-   4. ボタンのデザイン（PLAYボタンを超強化！）
+   4. ボタンのデザイン
    ========================================= */
 button {
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -332,7 +365,6 @@ button:active {
   }
 }
 
-/* 各種モードのボタン */
 .btn-main, 
 .btn-cpu, 
 .btn-local { 
@@ -492,13 +524,8 @@ select:focus {
   background: var(--input-bg);
 }
 
-input::placeholder {
-  color: inherit;
-  opacity: 0.5;
-}
-
 /* =========================================
-   6. モーダル画面（設定・ランキングなど）
+   6. モーダルとゲーム画面
    ========================================= */
 #settings-modal, 
 #ranking-modal, 
@@ -586,13 +613,13 @@ input::placeholder {
 }
 
 /* =========================================
-   7. ゲーム画面のデザイン
+   7. ゲーム画面のデザインと揺れ防止
    ========================================= */
 #score-board { 
   display: inline-flex; 
   justify-content: center; 
   gap: 40px; 
-  margin-bottom: 20px; 
+  margin-bottom: 10px; 
   font-size: 24px; 
   font-weight: bold; 
   background: var(--input-bg);
@@ -601,13 +628,25 @@ input::placeholder {
   border: 1px solid var(--glass-border);
 }
 
+/* ★重要：ターンメッセージの高さを固定して画面のガタつきを防止 */
+#turn-msg {
+  height: 40px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
 #game-board {
   display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); 
-  gap: 15px; 
+  /* JavaScriptから動的に列数を変更するため、ここではgapだけ指定 */
+  gap: 12px; 
   justify-content: center; 
-  max-width: 900px; 
-  margin: 30px auto;
+  margin: 0 auto;
+  /* 横幅が伸びすぎないように調整 */
+  max-width: 1000px;
+  padding-bottom: 40px;
 }
 
 .card { 
