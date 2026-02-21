@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="referrer" content="no-referrer">
+  <title>Neural Match Online AI</title>
+  
+  <link rel="stylesheet" href="style.css">
+  
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+  <div class="bg-decoration bg-decoration-1"></div>
+  <div class="bg-decoration bg-decoration-2"></div>
+
+  <div id="home-screen" class="glass-container home-layout">
+    <h1 class="main-title">
+      <span class="title-neural">NEURAL</span>
+      <span class="title-match">MATCH</span>
+      <span class="title-ai">AI</span>
+    </h1>
+    <p class="title-sub">脳神経を刺激する、次世代の間違い探し。</p>
+
+    <div id="auth-section" class="compact-auth">
+      <p id="user-info-text">ゲストとしてプレイ中</p>
+      <button id="btn-login" class="btn-google-sm" onclick="loginWithGoogle()">Googleでログインして戦績を保存</button>
+      <button id="btn-logout" class="btn-logout-sm" style="display: none;" onclick="logout()">ログアウト</button>
+    </div>
+    
+    <div class="play-button-wrapper">
+      <button class="btn-play-huge pulse-effect" onclick="openSetup()">
+        <span style="font-size: 32px; display: block;">🎮 PLAY NOW</span>
+        <span style="font-size: 14px; opacity: 0.8;">ゲームの世界へ飛び込む</span>
+      </button>
+    </div>
+    
+    <div class="button-row">
+      <button class="btn-settings" onclick="openSettings()">⚙️ 設定・テーマ</button>
+      <button class="btn-ranking" onclick="openRanking()">🏆 ランキング</button>
+    </div>
+  </div>
+
+  <div id="setup-screen" class="glass-container">
+    <button class="btn-back" onclick="closeSetup()">← ホームに戻る</button>
+    
+    <h2 style="margin-top: 0; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px;">ゲーム設定</h2>
+
+    <div class="menu-group">
+      <label>🔑 合言葉（オンライン用）</label>
+      <input type="text" id="room-input" placeholder="空欄なら「だれでも」部屋">
+    </div>
+
+    <div class="menu-group">
+      <label>✨ テーマ（風景、ロボット、モンスター、顔、その他）</label>
+      <input type="text" id="theme-input" placeholder="例: 風景、ロボット、または好きな言葉(猫)">
+    </div>
+
+    <div class="menu-group">
+      <label>🃏 ペア数（最大50）</label>
+      <input type="number" id="pairs-input" value="6" min="2" max="50">
+    </div>
+
+    <button class="btn-main" onclick="startGame('online')">🌐 オンライン対戦を開始</button>
+    <button class="btn-cpu" onclick="startGame('cpu')">🤖 1人でCPUと対戦</button>
+    <button class="btn-local" onclick="startGame('local')">📱 1画面で2人で対戦</button>
+    
+    <div id="status-msg" style="color:var(--label-color); margin-top:15px; font-weight:bold;"></div>
+  </div>
+
+  <div id="settings-modal">
+    <div class="settings-content">
+      <h2>⚙️ 設定</h2>
+      
+      <label style="display: block; font-weight: bold; margin-bottom: 5px; color: var(--label-color);">🎨 アプリのテーマ:</label>
+      <select id="ui-theme-input" style="margin-bottom: 20px;">
+        <option value="default">サイバーネオン (Default)</option>
+        <option value="chuuni">漆黒の堕天使 (中二病)</option>
+        <option value="calm">夜更けのカフェ (落ち着く)</option>
+        <option value="deepsea">深海のアビス (深い海)</option>
+      </select>
+
+      <label style="display: block; font-weight: bold; margin-bottom: 5px; color: var(--label-color);">👤 プレイヤー名:</label>
+      <input type="text" id="player-name-input" placeholder="名前を入力してください">
+      <p style="font-size: 12px; opacity: 0.7; margin-top: -5px; margin-bottom: 15px;">※ログイン中はGoogleの名前が優先されます</p>
+      
+      <p id="player-stats">戦績: 取得中...</p>
+
+      <label style="display: block; font-weight: bold; margin-bottom: 5px; color: var(--label-color);">🤖 CPUの強さ:</label>
+      <select id="cpu-level-input">
+        <option value="easy">Easy (記憶力ゼロ・ランダム)</option>
+        <option value="normal" selected>Normal (たまに思い出す)</option>
+        <option value="hard">Hard (絶対に忘れない)</option>
+      </select>
+
+      <button class="close-btn" onclick="closeAndSaveSettings()">保存して閉じる</button>
+    </div>
+  </div>
+
+  <div id="ranking-modal">
+    <div class="settings-content">
+      <h2>🏆 勝利数ランキング</h2>
+      
+      <div id="ranking-list">
+        読み込み中...
+      </div>
+      
+      <button class="close-btn" onclick="closeRanking()">閉じる</button>
+    </div>
+  </div>
+
+  <div id="game-screen">
+    <h1 class="game-title">🎨 Neural Match AI</h1>
+    
+    <div id="score-board">
+      <div id="p1-score">P1: 0</div>
+      <div id="p2-score">P2: 0</div>
+    </div>
+    
+    <h2 id="turn-msg">待機中...</h2>
+    
+    <div id="game-board"></div>
+  </div>
+
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <h2 id="loading-text" style="color: var(--text-color); line-height: 1.5;"></h2>
+  </div>
+
+  <div id="result-modal">
+    <div class="settings-content" style="text-align: center;">
+      <h2 id="result-title" style="border: none; font-size: 40px;">ゲーム終了！</h2>
+      <p id="result-score" style="font-size: 24px; margin-bottom: 30px;">P1: 0点 - P2: 0点</p>
+      <button class="btn-play-huge" onclick="backToMenu()">ホームに戻る</button>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    // =========================================
+    // Web Audio API（サウンド効果）
+    // =========================================
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioContext();
+
+    function playSound(type) {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      const osc = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      
+      osc.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+
+      const now = audioCtx.currentTime;
+
+      if (type === 'flip') {
+        osc.type = 'sine'; 
+        osc.frequency.setValueAtTime(400, now);
+        osc.frequency.exponentialRampToValueAtTime(600, now + 0.1);
+        gainNode.gain.setValueAtTime(0.3, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+        osc.start(now);
+        osc.stop(now + 0.1);
+      } 
+      else if (type === 'match') {
+        osc.type = 'square'; 
+        osc.frequency.setValueAtTime(880, now);
+        osc.frequency.setValueAtTime(1760, now + 0.1); 
+        gainNode.gain.setValueAtTime(0.1, now);
+        gainNode.gain.linearRampToValueAtTime(0.01, now + 0.3);
+        osc.start(now);
+        osc.stop(now + 0.3);
+      }
+      else if (type === 'miss') {
+        osc.type = 'sawtooth'; 
+        osc.frequency.setValueAtTime(150, now);
+        gainNode.gain.setValueAtTime(0.1, now);
+        gainNode.gain.linearRampToValueAtTime(0.01, now + 0.3);
+        osc.start(now);
+        osc.stop(now + 0.3);
+      }
+      else if (type === 'win') {
+        osc.type = 'triangle'; 
+        osc.frequency.setValueAtTime(523.25, now);       
+        osc.frequency.setValueAtTime(659.25, now + 0.1); 
+        osc.frequency.setValueAtTime(783.99, now + 0.2); 
+        osc.frequency.setValueAtTime(1046.50, now + 0.3);
+        gainNode.gain.setValueAtTime(0.2, now);
+        gainNode.gain.linearRampToValueAtTime(0.01, now + 0.6);
+        osc.start(now);
+        osc.stop(now + 0.6);
+      }
+    }
+
+    // =========================================
+    // Firebaseの初期設定
+    // =========================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6JfSWO8EC7itSyaafqLI1qWP7fGTSvF8",
+      authDomain: "neural-match-online.firebaseapp.com",
+      projectId: "neural-match-online",
+      storageBucket: "neural-match-online.firebasestorage.app",
+      messagingSenderId: "641197406947",
+      appId: "1:641197406947:web:1327580eb18f6d7128e3d6"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    // =========================================
+    // UIテーマの初期化・読み込み
+    // =========================================
+    let myUiTheme = localStorage.getItem('savedUiTheme');
+    if (!myUiTheme) {
+      myUiTheme = 'default';
+    }
+    document.getElementById('ui-theme-input').value = myUiTheme;
+    document.body.className = `theme-${myUiTheme}`;
+
+
+    // その他の変数の初期化
+    let myPlayerName = localStorage.getItem('savedPlayerName');
+    if (!myPlayerName) {
+      myPlayerName = '名無しプレイヤー';
+    }
+
+    let myCpuLevel = localStorage.getItem('savedCpuLevel');
+    if (!myCpuLevel) {
+      myCpuLevel = 'normal';
+    }
+
+    let myRoomName = localStorage.getItem('savedRoomName');
+    if (!myRoomName) {
+      myRoomName = '';
+    }
+
+    let myWins = 0;
+    let myLosses = 0;
+
+    document.getElementById('player-name-input').value = myPlayerName;
+    document.getElementById('cpu-level-input').value = myCpuLevel;
+    document.getElementById('room-input').value = myRoomName;
+
+    function openSetup() {
+      document.getElementById('home-screen').style.display = 'none';
+      document.getElementById('setup-screen').style.display = 'inline-block';
+    }
+
+    function closeSetup() {
+      document.getElementById('setup-screen').style.display = 'none';
+      document.getElementById('home-screen').style.display = 'inline-block';
+    }
+
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        if (user.displayName) {
+          myPlayerName = user.displayName;
+        } else {
+          myPlayerName = "ゲスト";
+        }
+        document.getElementById('user-info-text').innerText = `✅ ${myPlayerName} でログイン中`;
+        document.getElementById('btn-login').style.display = 'none';
+        document.getElementById('btn-logout').style.display = 'inline-block';
+        document.getElementById('player-name-input').value = myPlayerName;
+        document.getElementById('player-name-input').disabled = true;
+        loadStatsFromFirebase();
+      } else {
+        let savedName = localStorage.getItem('savedPlayerName');
+        if (savedName) {
+          myPlayerName = savedName;
+        } else {
+          myPlayerName = '名無しプレイヤー';
+        }
+        document.getElementById('user-info-text').innerText = "ゲストとしてプレイ中";
+        document.getElementById('btn-login').style.display = 'inline-block';
+        document.getElementById('btn-logout').style.display = 'none';
+        document.getElementById('player-name-input').value = myPlayerName;
+        document.getElementById('player-name-input').disabled = false;
+        loadStatsFromFirebase();
+      }
+    });
+
+    function loginWithGoogle() {
+      firebase.auth().signInWithPopup(provider).catch((error) => {
+        console.error("ログインエラー:", error);
+        alert("ログインに失敗しました。");
+      });
+    }
+
+    function logout() {
+      firebase.auth().signOut().catch((error) => {
+        console.error("ログアウトエラー:", error);
+      });
+    }
+
+    function openSettings() {
+      document.getElementById('settings-modal').style.display = 'flex';
+    }
+
+    function closeAndSaveSettings() {
+      // UIテーマの保存と即時適用
+      myUiTheme = document.getElementById('ui-theme-input').value;
+      localStorage.setItem('savedUiTheme', myUiTheme);
+      document.body.className = `theme-${myUiTheme}`; 
+
+      if (!firebase.auth().currentUser) {
+        let inputName = document.getElementById('player-name-input').value;
+        if (!inputName) {
+          myPlayerName = '名無しプレイヤー';
+        } else {
+          myPlayerName = inputName;
+        }
+        localStorage.setItem('savedPlayerName', myPlayerName);
+      }
+      
+      myCpuLevel = document.getElementById('cpu-level-input').value;
+      localStorage.setItem('savedCpuLevel', myCpuLevel);
+      
+      loadStatsFromFirebase();
+      document.getElementById('settings-modal').style.display = 'none';
+    }
+
+    function openRanking() {
+      document.getElementById('ranking-modal').style.display = 'flex';
+      document.getElementById('ranking-list').innerHTML = "データベースから取得中...🏃‍♂️💨";
+
+      db.collection("players").orderBy("wins", "desc").limit(5).get().then((querySnapshot) => {
+        let htmlText = "<ol style='padding-left: 20px; margin: 0;'>";
+        
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const name = doc.id; 
+          
+          let wins = 0;
+          if (data.wins) {
+            wins = data.wins;
+          }
+          
+          let losses = 0;
+          if (data.losses) {
+            losses = data.losses;
+          }
+          
+          htmlText += `<li style="margin-bottom: 12px; border-bottom: 1px dashed var(--glass-border); padding-bottom: 5px;">
+                        <b style="color:var(--label-color); font-size:22px;">${name}</b> <br>
+                        ${wins}勝 ${losses}敗
+                      </li>`;
+        });
+        
+        htmlText += "</ol>";
+
+        if (querySnapshot.empty) {
+          htmlText = "<p>まだデータがありません。<br>あなたが最初の1位になるチャンス！</p>";
+        }
+
+        document.getElementById('ranking-list').innerHTML = htmlText;
+
+      }).catch((error) => {
+        console.error("ランキング取得エラー:", error);
+        document.getElementById('ranking-list').innerHTML = "エラーが発生しました。";
+      });
+    }
+
+    function closeRanking() {
+      document.getElementById('ranking-modal').style.display = 'none';
+    }
+
+    function loadStatsFromFirebase() {
+      db.collection("players").doc(myPlayerName).get().then((doc) => {
+        if (doc.exists) {
+          const data = doc.data();
+          if (data.wins) {
+            myWins = data.wins;
+          } else {
+            myWins = 0;
+          }
+          
+          if (data.losses) {
+            myLosses = data.losses;
+          } else {
+            myLosses = 0;
+          }
+        } else {
+          myWins = 0;
+          myLosses = 0;
+        }
+        
+        document.getElementById('player-stats').innerText = `戦績: ${myWins}勝 ${myLosses}敗`;
+        
+      }).catch((error) => {
+        console.error("戦績の読み込みエラー:", error);
+        document.getElementById('player-stats').innerText = "戦績: 読み込み失敗";
+      });
+    }
+
+    function saveStatsToFirebase() {
+      db.collection("players").doc(myPlayerName).set({
+        wins: myWins,
+        losses: myLosses,
+        lastPlayed: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true }).then(() => {
+        document.getElementById('player-stats').innerText = `戦績: ${myWins}勝 ${myLosses}敗`;
+        console.log("戦績を保存しました！");
+      }).catch((error) => {
+        console.error("戦績保存エラー:", error);
+      });
+    }
+
+    const socket = io();
+    let myId = null;
+    let currentGameMode = 'online';
+
+    socket.on('connect', () => { 
+      myId = socket.id; 
+    });
+
+    function startGame(mode) {
+      playSound('flip');
+
+      currentGameMode = mode; 
+
+      let theme = document.getElementById('theme-input').value;
+      if (!theme) {
+        theme = "おまかせ";
+      }
+
+      let pairs = parseInt(document.getElementById('pairs-input').value);
+      
+      const inputRoom = document.getElementById('room-input').value;
+      localStorage.setItem('savedRoomName', inputRoom);
+      
+      if (pairs < 2) {
+        pairs = 2;
+      }
+      if (pairs > 50) {
+        pairs = 50;
+      }
+
+      let modeText = "";
+      if (mode === 'cpu') {
+        modeText = `💻 CPU対戦 (${myCpuLevel})`; 
+      } else if (mode === 'local') {
+        modeText = '📱 1画面対戦';
+      } else {
+        if (inputRoom !== "") {
+          modeText = `🌐 オンライン (部屋: ${inputRoom})`;
+        } else {
+          modeText = '🌐 オンライン (だれでも部屋)';
+        }
+      }
+
+      document.getElementById('loading-text').innerHTML = `${modeText}<br><br>「${theme}」のカードを準備中...<br>(${pairs * 2}枚)`;
+      document.getElementById('loading-overlay').style.display = 'flex'; 
+      
+      socket.emit('request_ai_theme', { 
+        theme: theme, 
+        pairs: pairs, 
+        mode: mode,
+        cpuLevel: myCpuLevel,
+        roomName: inputRoom
+      });
+    }
+
+    socket.on('ai_status', (msg) => {
+      document.getElementById('status-msg').innerText = msg;
+    });
+
+    socket.on('game_started', () => {
+      document.getElementById('loading-overlay').style.display = 'none';
+      document.getElementById('setup-screen').style.display = 'none';
+      document.getElementById('home-screen').style.display = 'none';
+      document.getElementById('game-screen').style.display = 'block';
+    });
+
+    socket.on('update_game', (state) => {
+      const { cards, scores, currentTurn, players } = state;
+      const board = document.getElementById('game-board');
+      
+      let p1Name = "Player 1";
+      if (players[0] === 'CPU') {
+        p1Name = "🤖 CPU";
+      } else if (players[0].endsWith('_P1')) {
+        p1Name = "🔴 P1";
+      }
+
+      let p2Name = "Player 2";
+      if (players[1] === 'CPU') {
+        p2Name = "🤖 CPU";
+      } else if (players[1].endsWith('_P2')) {
+        p2Name = "🔵 P2";
+      }
+
+      document.getElementById('p1-score').innerText = `${p1Name}: ${scores[players[0]] || 0}`;
+      document.getElementById('p2-score').innerText = `${p2Name}: ${scores[players[1]] || 0}`;
+      
+      const turnMsg = document.getElementById('turn-msg');
+      
+      if (currentTurn.startsWith(myId)) {
+        board.classList.remove('disabled'); 
+        
+        if (currentTurn.endsWith('_P1')) {
+          turnMsg.innerText = "🔴 P1 の番です！"; 
+        } else {
+          turnMsg.innerText = "🔵 P2 の番です！"; 
+        }
+        turnMsg.style.color = "var(--label-color)"; 
+      } 
+      else if (currentTurn === myId) {
+        turnMsg.innerText = "あなたの番です！"; 
+        turnMsg.style.color = "var(--label-color)";
+        board.classList.remove('disabled'); 
+      } 
+      else if (currentTurn === 'CPU') {
+        turnMsg.innerText = "💻 CPUが思考中..."; 
+        turnMsg.style.color = "var(--text-color)";
+        board.classList.add('disabled'); 
+      } 
+      else {
+        turnMsg.innerText = "相手の思考中..."; 
+        turnMsg.style.color = "var(--text-color)";
+        board.classList.add('disabled'); 
+      }
+
+      board.innerHTML = '';
+      
+      cards.forEach((card) => {
+        const div = document.createElement('div');
+        div.className = 'card';
+        
+        if (card.isOpen) {
+          div.classList.add('open');
+        }
+        
+        if (card.isMatched) {
+          div.classList.add('matched');
+        }
+
+        const img = document.createElement('img');
+        img.src = card.val;
+        div.appendChild(img);
+
+        div.onclick = () => {
+          if (currentTurn === myId || currentTurn.startsWith(myId)) {
+            playSound('flip');
+            socket.emit('flip_card', card.id);
+          }
+        };
+        
+        board.appendChild(div);
+      });
+    });
+
+    socket.on('match_result', (data) => {
+      if (data.success) {
+        playSound('match'); 
+      } else {
+        playSound('miss'); 
+      }
+    });
+
+    socket.on('game_over', (data) => {
+      const { winner, scores, players, gameMode } = data;
+      
+      let title = "引き分け！🤝";
+      let isMyWin = false; 
+      
+      if (gameMode === 'local') {
+        if (winner && winner.endsWith('_P1')) {
+          title = "🔴 P1の勝ち！ 🎉";
+          isMyWin = true; 
+        } else if (winner && winner.endsWith('_P2')) {
+          title = "🔵 P2の勝ち！ 🎉";
+          isMyWin = true;
+        }
+      } 
+      else {
+        if (winner === myId) {
+          title = "🎉 あなたの勝ち！ 🎉";
+          isMyWin = true; 
+          myWins += 1; 
+          saveStatsToFirebase(); 
+          
+        } else if (winner === 'CPU') {
+          title = "💻 CPUの勝ち..."; 
+          myLosses += 1; 
+          saveStatsToFirebase(); 
+          
+        } else if (winner) {
+          title = "😭 あなたの負け...";
+          myLosses += 1; 
+          saveStatsToFirebase(); 
+        }
+      }
+      
+      if (isMyWin) {
+        playSound('win');
+        
+        confetti({
+          particleCount: 150, 
+          spread: 80,         
+          origin: { y: 0.6 }, 
+          colors: ['#ffeb3b', '#00bcd4', '#ff416c', '#38ef7d'] 
+        });
+      }
+      
+      let p1Name = "P1";
+      if (players[0] === 'CPU') {
+        p1Name = "CPU";
+      } else if (gameMode === 'local') {
+        p1Name = "🔴 P1";
+      }
+
+      let p2Name = "P2";
+      if (players[1] === 'CPU') {
+        p2Name = "CPU";
+      } else if (gameMode === 'local') {
+        p2Name = "🔵 P2";
+      }
+
+      document.getElementById('result-title').innerText = title;
+      document.getElementById('result-score').innerText = `${p1Name}: ${scores[players[0]] || 0}点 / ${p2Name}: ${scores[players[1]] || 0}点`;
+      document.getElementById('result-modal').style.display = 'flex';
+    });
+
+    function backToMenu() {
+      document.getElementById('result-modal').style.display = 'none';
+      document.getElementById('game-screen').style.display = 'none';
+      document.getElementById('setup-screen').style.display = 'none';
+      document.getElementById('home-screen').style.display = 'inline-block';
+    }
+  </script>
+</body>
+</html>

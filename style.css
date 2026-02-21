@@ -1,0 +1,693 @@
+/* =========================================
+   style.css (第10弾：超没入型ホーム画面UI / 真の完全フル展開版)
+   ========================================= */
+
+/* =========================================
+   0. 魔導書（テーマ変数）の定義
+   ========================================= */
+/* ① デフォルト（サイバーネオン） */
+:root {
+  --bg-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  --bg-pattern-color: rgba(0, 188, 212, 0.1); 
+  --text-color: #ffffff;
+  --title-glow: rgba(0, 188, 212, 0.8);
+  --title-accent-1: #00bcd4; 
+  --title-accent-2: #ff416c; 
+  --glass-bg: rgba(20, 20, 30, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --label-color: #81d4fa;
+  --input-bg: rgba(0, 0, 0, 0.3);
+  --input-border: rgba(255, 255, 255, 0.2);
+  --input-focus: #00bcd4;
+  --btn-play-bg: linear-gradient(45deg, #ff416c, #ff4b2b);
+  --btn-play-glow: rgba(255, 75, 43, 0.6); 
+  --btn-main-bg: linear-gradient(45deg, #00b4db, #0083b0);
+  --btn-cpu-bg: linear-gradient(45deg, #11998e, #38ef7d);
+  --btn-local-bg: linear-gradient(45deg, #8e2de2, #4a00e0);
+  --btn-settings-bg: rgba(255, 255, 255, 0.1);
+  --card-bg: linear-gradient(135deg, #00bcd4, #2196f3);
+  --modal-glass-bg: rgba(30, 30, 30, 0.85);
+  --modal-glow: rgba(76, 175, 80, 0.3);
+  --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ② 本気の中二病（漆黒と紅蓮） */
+body.theme-chuuni {
+  --bg-gradient: linear-gradient(135deg, #050000, #3a0000, #110000);
+  --bg-pattern-color: rgba(255, 0, 0, 0.15);
+  --text-color: #e0e0e0;
+  --title-glow: rgba(255, 0, 0, 0.9);
+  --title-accent-1: #ff1744;
+  --title-accent-2: #d50000;
+  --glass-bg: rgba(10, 0, 0, 0.8);
+  --glass-border: rgba(255, 0, 0, 0.3);
+  --label-color: #ff1744;
+  --input-bg: rgba(30, 0, 0, 0.6);
+  --input-border: rgba(255, 0, 0, 0.4);
+  --input-focus: #ff5252;
+  --btn-play-bg: linear-gradient(45deg, #b71c1c, #d50000);
+  --btn-play-glow: rgba(213, 0, 0, 0.7);
+  --btn-main-bg: linear-gradient(45deg, #4a0000, #880e4f);
+  --btn-cpu-bg: linear-gradient(45deg, #3e2723, #bf360c);
+  --btn-local-bg: linear-gradient(45deg, #311b92, #4a148c);
+  --btn-settings-bg: rgba(255, 0, 0, 0.15);
+  --card-bg: linear-gradient(135deg, #212121, #b71c1c);
+  --modal-glass-bg: rgba(15, 0, 0, 0.95);
+  --modal-glow: rgba(255, 0, 0, 0.5);
+  --font-family: 'Times New Roman', 'Noto Serif JP', serif;
+}
+
+/* ③ 夜更けのカフェ（ダークウォーム） */
+body.theme-calm {
+  --bg-gradient: linear-gradient(135deg, #2b211e, #1f1816, #2d2421);
+  --bg-pattern-color: rgba(215, 204, 200, 0.05);
+  --text-color: #d7ccc8;
+  --title-glow: rgba(215, 204, 200, 0.2);
+  --title-accent-1: #bcaaa4;
+  --title-accent-2: #8d6e63;
+  --glass-bg: rgba(20, 15, 13, 0.7);
+  --glass-border: rgba(215, 204, 200, 0.05);
+  --label-color: #bcaaa4;
+  --input-bg: rgba(0, 0, 0, 0.4);
+  --input-border: rgba(215, 204, 200, 0.15);
+  --input-focus: #a1887f;
+  --btn-play-bg: linear-gradient(45deg, #8d6e63, #5d4037);
+  --btn-play-glow: rgba(141, 110, 99, 0.5);
+  --btn-main-bg: linear-gradient(45deg, #5d4037, #4e342e);
+  --btn-cpu-bg: linear-gradient(45deg, #795548, #5d4037);
+  --btn-local-bg: linear-gradient(45deg, #4e342e, #3e2723);
+  --btn-settings-bg: rgba(255, 255, 255, 0.05);
+  --card-bg: linear-gradient(135deg, #5d4037, #3e2723);
+  --modal-glass-bg: rgba(25, 18, 16, 0.95);
+  --modal-glow: rgba(141, 110, 99, 0.1);
+  --font-family: 'Georgia', 'Yu Mincho', serif;
+}
+
+/* ④ 深海のアビス（深い海） */
+body.theme-deepsea {
+  --bg-gradient: linear-gradient(135deg, #020024, #090979, #00d4ff);
+  --bg-pattern-color: rgba(0, 212, 255, 0.15);
+  --text-color: #e0f7fa;
+  --title-glow: rgba(0, 212, 255, 0.8);
+  --title-accent-1: #00e5ff;
+  --title-accent-2: #0091ea;
+  --glass-bg: rgba(0, 10, 40, 0.6);
+  --glass-border: rgba(0, 212, 255, 0.3);
+  --label-color: #18ffff;
+  --input-bg: rgba(0, 20, 60, 0.6);
+  --input-border: rgba(0, 212, 255, 0.4);
+  --input-focus: #00e5ff;
+  --btn-play-bg: linear-gradient(45deg, #00c6ff, #0072ff);
+  --btn-play-glow: rgba(0, 198, 255, 0.7);
+  --btn-main-bg: linear-gradient(45deg, #1cb5e0, #000851);
+  --btn-cpu-bg: linear-gradient(45deg, #00cdac, #02aab0);
+  --btn-local-bg: linear-gradient(45deg, #0575e6, #021b79);
+  --btn-settings-bg: rgba(0, 212, 255, 0.15);
+  --card-bg: linear-gradient(135deg, #000428, #004e92);
+  --modal-glass-bg: rgba(0, 15, 40, 0.9);
+  --modal-glow: rgba(0, 212, 255, 0.4);
+  --font-family: 'Courier New', Courier, monospace;
+}
+
+
+/* =========================================
+   1. 全体の基本設定と動く背景
+   ========================================= */
+body { 
+  font-family: var(--font-family); 
+  text-align: center; 
+  background: var(--bg-gradient); 
+  background-attachment: fixed;
+  color: var(--text-color); 
+  margin: 0; 
+  padding: 0; 
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; 
+  transition: background 0.8s ease, color 0.8s ease;
+}
+
+/* 背景の動く装飾（カードパターン） */
+.bg-decoration {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 200vmax;
+  height: 200vmax;
+  background-image: 
+    repeating-linear-gradient(45deg, var(--bg-pattern-color) 0px, transparent 2px, transparent 10px),
+    repeating-linear-gradient(-45deg, var(--bg-pattern-color) 0px, transparent 2px, transparent 10px),
+    linear-gradient(to bottom, transparent, var(--bg-pattern-color));
+  background-size: 100px 100px, 100px 100px, 100% 100%;
+  opacity: 0.3;
+  z-index: -1; 
+  transform-origin: center;
+  animation: rotateBg 60s linear infinite; 
+}
+
+.bg-decoration-2 {
+  width: 150vmax;
+  height: 150vmax;
+  opacity: 0.2;
+  animation-direction: reverse; 
+  animation-duration: 45s;
+}
+
+@keyframes rotateBg {
+  0% { 
+    transform: translate(-50%, -50%) rotate(0deg); 
+  }
+  100% { 
+    transform: translate(-50%, -50%) rotate(360deg); 
+  }
+}
+
+/* =========================================
+   2. 各種画面のコンテナ（すりガラス強化）
+   ========================================= */
+.glass-container {
+  background: var(--glass-bg); 
+  backdrop-filter: blur(20px); 
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border); 
+  padding: 50px; 
+  border-radius: 25px; 
+  display: inline-block; 
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); 
+  width: 450px; 
+  max-width: 90%;
+  animation: fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1); 
+  transition: all 0.5s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-container::before {
+  content: '';
+  position: absolute;
+  top: 0; 
+  left: 0; 
+  right: 0;
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--title-accent-1), transparent);
+  opacity: 0.5;
+}
+
+@keyframes fadeIn {
+  0% { 
+    opacity: 0; 
+    transform: translateY(40px) scale(0.95); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
+}
+
+#home-screen, 
+#setup-screen, 
+#game-screen {
+  display: none;
+}
+
+#home-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* =========================================
+   3. タイトルロゴのデザイン（超強化！）
+   ========================================= */
+.main-title {
+  font-size: 48px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  line-height: 1;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  text-shadow: 
+    0 0 10px var(--title-glow),
+    0 0 20px var(--title-glow),
+    0 0 40px var(--title-accent-1),
+    0 0 80px var(--title-accent-2);
+}
+
+.title-neural { 
+  color: var(--text-color); 
+}
+
+.title-match { 
+  color: var(--title-accent-1); 
+}
+
+.title-ai { 
+  color: var(--title-accent-2); 
+}
+
+.title-sub {
+  font-size: 16px;
+  letter-spacing: 2px;
+  opacity: 0.8;
+  margin-bottom: 40px;
+  font-weight: bold;
+}
+
+.game-title {
+  font-size: 32px;
+  margin-bottom: 20px;
+  text-shadow: 0 0 15px var(--title-glow);
+}
+
+/* =========================================
+   4. ボタンのデザイン（PLAYボタンを超強化！）
+   ========================================= */
+button {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  color: white; 
+  font-family: inherit;
+}
+
+button:hover {
+  transform: translateY(-5px) scale(1.02);
+  filter: brightness(1.2);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+button:active {
+  transform: translateY(2px) scale(0.98);
+}
+
+.play-button-wrapper {
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.btn-play-huge {
+  background: var(--btn-play-bg);
+  padding: 25px 40px;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: 900;
+  width: 100%;
+  box-shadow: 0 10px 30px var(--btn-play-glow);
+  position: relative;
+  overflow: hidden;
+  animation: pulse 2s infinite; 
+}
+
+.btn-play-huge::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(to bottom right, rgba(255,255,255,0.4), transparent, transparent);
+  transform: rotate(45deg);
+  animation: shine 3s infinite;
+}
+
+@keyframes pulse {
+  0% { 
+    box-shadow: 0 10px 30px var(--btn-play-glow); 
+  }
+  50% { 
+    box-shadow: 0 15px 40px var(--btn-play-glow), 0 0 20px var(--title-accent-2) inset; 
+  }
+  100% { 
+    box-shadow: 0 10px 30px var(--btn-play-glow); 
+  }
+}
+
+@keyframes shine {
+  0% { 
+    transform: translateX(-100%) rotate(45deg); 
+  }
+  100% { 
+    transform: translateX(100%) rotate(45deg); 
+  }
+}
+
+/* 各種モードのボタン */
+.btn-main, 
+.btn-cpu, 
+.btn-local { 
+  padding: 18px; 
+  font-size: 18px; 
+  border: none; 
+  border-radius: 12px; 
+  cursor: pointer; 
+  font-weight: bold; 
+  width: 100%; 
+  margin-bottom: 15px; 
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-main { 
+  background: var(--btn-main-bg); 
+}
+
+.btn-cpu { 
+  background: var(--btn-cpu-bg); 
+}
+
+.btn-local { 
+  background: var(--btn-local-bg); 
+}
+
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 15px;
+}
+
+.btn-settings, 
+.btn-ranking { 
+  background: var(--btn-settings-bg); 
+  color: var(--text-color); 
+  padding: 15px; 
+  font-size: 16px; 
+  border: 1px solid var(--glass-border); 
+  border-radius: 12px; 
+  cursor: pointer; 
+  font-weight: bold; 
+  width: 48%; 
+  transition: all 0.3s;
+}
+
+.btn-ranking { 
+  color: var(--label-color); 
+}
+
+.btn-settings:hover, 
+.btn-ranking:hover {
+  background: var(--glass-border);
+  border-color: var(--title-accent-1);
+}
+
+.btn-back {
+  background: transparent; 
+  color: var(--text-color); 
+  border: none; 
+  font-size: 16px;
+  cursor: pointer; 
+  margin-bottom: 20px; 
+  text-align: left; 
+  width: 100%; 
+  padding: 0;
+  opacity: 0.7; 
+  display: flex; 
+  align-items: center;
+}
+
+.btn-back:hover { 
+  opacity: 1; 
+  transform: translateX(-5px); 
+}
+
+.btn-google-sm {
+  background: #4285f4; 
+  color: white; 
+  padding: 8px 15px; 
+  font-size: 13px;
+  border: none; 
+  border-radius: 6px; 
+  cursor: pointer; 
+  font-weight: bold;
+}
+
+.btn-logout-sm {
+  background: transparent; 
+  color: #ff5252; 
+  padding: 8px 15px; 
+  font-size: 13px;
+  border: 1px solid #ff5252; 
+  border-radius: 6px; 
+  cursor: pointer; 
+  font-weight: bold;
+}
+
+/* =========================================
+   5. 入力フォームとログインエリア
+   ========================================= */
+.compact-auth {
+  background: var(--input-bg);
+  padding: 10px 15px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  border-left: 3px solid var(--label-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#user-info-text {
+  margin: 0;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.menu-group { 
+  margin-bottom: 25px; 
+  text-align: left; 
+  width: 100%;
+}
+
+.menu-group label { 
+  display: block; 
+  font-weight: bold; 
+  margin-bottom: 10px; 
+  color: var(--label-color); 
+  font-size: 15px; 
+  letter-spacing: 1px;
+}
+
+input[type="text"], 
+input[type="number"], 
+select { 
+  background: var(--input-bg); 
+  color: var(--text-color); 
+  padding: 15px; 
+  font-size: 16px; 
+  border-radius: 10px; 
+  border: 2px solid var(--input-border); 
+  width: 100%; 
+  box-sizing: border-box; 
+  transition: all 0.3s;
+}
+
+input[type="text"]:focus, 
+input[type="number"]:focus, 
+select:focus { 
+  outline: none; 
+  border-color: var(--input-focus);
+  box-shadow: 0 0 15px var(--modal-glow); 
+  background: var(--input-bg);
+}
+
+input::placeholder {
+  color: inherit;
+  opacity: 0.5;
+}
+
+/* =========================================
+   6. モーダル画面（設定・ランキングなど）
+   ========================================= */
+#settings-modal, 
+#ranking-modal, 
+#result-modal, 
+#loading-overlay { 
+  display: none; 
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%; 
+  background: rgba(0,0,0,0.85); 
+  z-index: 2000; 
+  justify-content: center; 
+  align-items: center; 
+}
+
+#loading-overlay, 
+#result-modal { 
+  flex-direction: column; 
+  z-index: 3000; 
+}
+
+.settings-content { 
+  background: var(--modal-glass-bg); 
+  backdrop-filter: blur(20px); 
+  padding: 40px; 
+  border-radius: 25px; 
+  text-align: left; 
+  box-shadow: 0 0 50px var(--modal-glow); 
+  width: 400px; 
+  border: 1px solid var(--modal-glow); 
+  animation: fadeIn 0.3s ease-out;
+}
+
+#ranking-modal .settings-content {
+  box-shadow: 0 0 50px var(--title-accent-2); 
+  border: 1px solid var(--title-accent-2);
+}
+
+.settings-content h2 { 
+  margin-top: 0; 
+  text-align: center; 
+  border-bottom: 2px solid var(--glass-border); 
+  padding-bottom: 20px; 
+  margin-bottom: 30px; 
+  font-size: 28px;
+}
+
+#player-stats {
+  font-size: 24px; 
+  font-weight: bold; 
+  color: var(--label-color);
+  margin-top: 20px; 
+  margin-bottom: 30px; 
+  text-align: center;
+}
+
+#ranking-list {
+  font-size: 18px; 
+  line-height: 1.8; 
+  margin-bottom: 20px; 
+  background: var(--input-bg);
+  padding: 20px; 
+  border-radius: 15px; 
+  color: var(--text-color);
+}
+
+.close-btn { 
+  background: var(--btn-settings-bg); 
+  color: var(--text-color); 
+  padding: 15px; 
+  border: 1px solid var(--glass-border); 
+  border-radius: 12px; 
+  cursor: pointer; 
+  font-size: 16px; 
+  margin-top: 20px; 
+  width: 100%; 
+  font-weight: bold;
+}
+
+.close-btn:hover { 
+  background: var(--glass-border); 
+  border-color: var(--title-accent-1); 
+}
+
+/* =========================================
+   7. ゲーム画面のデザイン
+   ========================================= */
+#score-board { 
+  display: inline-flex; 
+  justify-content: center; 
+  gap: 40px; 
+  margin-bottom: 20px; 
+  font-size: 24px; 
+  font-weight: bold; 
+  background: var(--input-bg);
+  padding: 15px 30px; 
+  border-radius: 15px; 
+  border: 1px solid var(--glass-border);
+}
+
+#game-board {
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); 
+  gap: 15px; 
+  justify-content: center; 
+  max-width: 900px; 
+  margin: 30px auto;
+}
+
+.card { 
+  aspect-ratio: 1 / 1; 
+  background: var(--card-bg); 
+  border-radius: 12px; 
+  cursor: pointer; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s; 
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
+  position: relative;
+}
+
+.card::before {
+  content: ''; 
+  position: absolute; 
+  top: 0; 
+  left: 0; 
+  right: 0; 
+  bottom: 0;
+  background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.1) 0px, transparent 2px, transparent 10px);
+  border-radius: 12px; 
+  pointer-events: none;
+}
+
+.card:hover { 
+  transform: scale(1.08) translateY(-5px); 
+  box-shadow: 0 15px 30px rgba(0,0,0,0.4); 
+}
+
+.card.open { 
+  background: white; 
+  transform: rotateY(180deg); 
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
+}
+
+.card.matched { 
+  opacity: 0.6; 
+  filter: grayscale(80%); 
+  transform: rotateY(180deg) scale(0.95); 
+}
+
+.card img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+  display: none; 
+  border-radius: 10px; 
+}
+
+.card.open img, 
+.card.matched img { 
+  display: block; 
+}
+
+.disabled { 
+  pointer-events: none; 
+  opacity: 0.6; 
+}
+
+/* =========================================
+   8. ローディングスピナー
+   ========================================= */
+.spinner { 
+  border: 8px solid var(--glass-border); 
+  border-top: 8px solid var(--title-accent-1); 
+  border-radius: 50%; 
+  width: 80px; 
+  height: 80px; 
+  animation: spin 1s linear infinite; 
+  margin-bottom: 30px; 
+}
+
+@keyframes spin { 
+  0% { 
+    transform: rotate(0deg); 
+  } 
+  100% { 
+    transform: rotate(360deg); 
+  } 
+}
