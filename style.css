@@ -1,5 +1,5 @@
 /* =========================================
-   style.css (第14弾：完全無圧縮・フル展開版)
+   style.css (第15弾：トランプ反転修正＆美麗グリッド整列 / 完全無圧縮版)
    ========================================= */
 
 /* =========================================
@@ -796,12 +796,16 @@ select:focus {
   background-color: white;
 }
 
+/* ★★★ 追加修正：開いたカードの画像をさらに逆回転させて正しく表示する ★★★ */
 .card.open img {
-  display: block; 
+  display: block;
+  transform: rotateY(180deg);
 }
 
+/* ★★★ 追加修正：マッチしたカードの画像も同様に逆回転させる ★★★ */
 .card.matched img { 
-  display: block; 
+  display: block;
+  transform: rotateY(180deg);
 }
 
 .disabled { 

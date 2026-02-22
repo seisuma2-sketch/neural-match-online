@@ -544,33 +544,22 @@
         document.body.className = `theme-${myUiTheme}`;
       }
 
+      // =========================================
+      // ★超重要：可能な限り綺麗な長方形を作る自動計算！
+      // =========================================
       const totalCards = cards.length;
-      let cols = 4;
+      
+      // 平方根を計算して切り上げることで、正方形に近い列数を自動で決定
+      let cols = Math.ceil(Math.sqrt(totalCards));
+      
+      // スマホなどで見づらくならないよう、最低でも3列は確保する
+      cols = Math.max(3, cols);
 
-      if (totalCards <= 12) {
-        cols = 4; 
-      } else if (totalCards <= 16) {
-        cols = 4; 
-      } else if (totalCards <= 20) {
-        cols = 5; 
-      } else if (totalCards <= 24) {
-        cols = 6; 
-      } else if (totalCards <= 30) {
-        cols = 6; 
-      } else if (totalCards <= 36) {
-        cols = 6; 
-      } else if (totalCards <= 42) {
-        cols = 7; 
-      } else if (totalCards <= 56) {
-        cols = 8; 
-      } else if (totalCards <= 72) {
-        cols = 9; 
-      } else {
-        cols = 10; 
-      }
-
+      // 計算した列数でグリッドを作成
       board.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-      board.style.maxWidth = `${cols * 85}px`; 
+      
+      // カードの幅(約85px) + 隙間(12px) を考慮して、全体の最大幅を設定
+      board.style.maxWidth = `${cols * 95}px`; 
 
 
       let p1Name = "Player 1";
