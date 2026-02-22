@@ -1,4 +1,4 @@
-// server.js (第11弾：再戦機能・トランプ対応 / 真の完全フル展開版)
+// server.js (第14弾：完全無圧縮・フル展開版)
 require('dotenv').config();
 const express = require('express');
 const app = express();
@@ -53,7 +53,9 @@ function initRoom(roomName) {
 // ==========================================
 function setupCards(room, imageList, pairsCount) {
   room.cards = [];
+  
   const selected = imageList.slice(0, pairsCount);
+  
   const pairs = [...selected, ...selected];
   
   pairs.sort(() => {
@@ -167,6 +169,7 @@ function playCPUTurn(roomName) {
     room.cpuMemory[card2.id] = card2.val;
 
     card1.isOpen = true;
+    
     io.to(roomName).emit('update_game', { 
       cards: room.cards, 
       scores: room.scores, 
@@ -183,6 +186,7 @@ function playCPUTurn(roomName) {
       }
 
       card2.isOpen = true;
+      
       io.to(roomName).emit('update_game', { 
         cards: room.cards, 
         scores: room.scores, 
@@ -285,22 +289,24 @@ function checkGameOver(roomName) {
 io.on('connection', (socket) => {
   console.log('接続されました。ID:', socket.id);
 
-  // ★新機能：「もう一度遊ぶ」が押された時の処理
   socket.on('play_again', () => {
     const roomName = socket.roomName;
-    if (!roomName || !rooms[roomName]) {
+    
+    if (!roomName) {
+      return;
+    }
+    
+    if (!rooms[roomName]) {
       return;
     }
     
     let room = rooms[roomName];
 
-    // カードを裏に戻して、もう一度シャッフルする
     room.cards.forEach((c) => {
       c.isOpen = false;
       c.isMatched = false;
     });
 
-    // 既存の画像を使って新しくシャッフル
     let values = room.cards.map((c) => {
       return c.val;
     });
@@ -314,14 +320,13 @@ io.on('connection', (socket) => {
       c.id = index;
     });
 
-    // スコアとターンをリセット
     room.players.forEach((id) => { 
       room.scores[id] = 0; 
     });
+    
     room.turnIndex = 0;
     room.cpuMemory = {};
 
-    // 部屋の全員に「再スタート」を通知する！
     io.to(roomName).emit('game_started');
     io.to(roomName).emit('update_game', { 
       cards: room.cards, 
@@ -383,7 +388,6 @@ io.on('connection', (socket) => {
         }
       }
 
-      // ★すでにゲームが終わっている部屋に入り直した場合は、自動でリセットする！
       const isGameOver = room.cards.length > 0 && room.cards.every((c) => {
         return c.isMatched;
       });
@@ -394,8 +398,13 @@ io.on('connection', (socket) => {
           c.isMatched = false;
         });
         
-        let values = room.cards.map((c) => { return c.val; });
-        values.sort(() => { return Math.random() - 0.5; });
+        let values = room.cards.map((c) => { 
+          return c.val; 
+        });
+        
+        values.sort(() => { 
+          return Math.random() - 0.5; 
+        });
         
         room.cards.forEach((c, index) => {
           c.val = values[index];
@@ -405,11 +414,11 @@ io.on('connection', (socket) => {
         room.players.forEach((id) => { 
           room.scores[id] = 0; 
         });
+        
         room.turnIndex = 0;
         room.cpuMemory = {};
       }
 
-      // 進行中の部屋に2人目として入った場合
       if (room.cards.length > 0) {
         socket.emit('ai_status', "部屋に参加しました！ゲームスタート！");
         socket.emit('game_started');
@@ -427,12 +436,8 @@ io.on('connection', (socket) => {
     console.log(`部屋[${roomName}] で生成開始`);
     io.to(roomName).emit('ai_status', `カードを準備しています...`);
 
-    // ==========================================
-    // フォールバック機能 ＆ ★トランプ機能追加
-    // ==========================================
     let aiImageUrls = [];
 
-    // ★新機能：トランプモード！本物のトランプ画像を用意する
     if (userTheme === "トランプ" || userTheme === "カード") {
       const suits = ['S','H','D','C'];
       const ranks = ['A','2','3','4','5','6','7','8','9','0','J','Q','K'];
@@ -449,7 +454,7 @@ io.on('connection', (socket) => {
       });
       
       for (let i = 0; i < pairsCount; i++) {
-        let cardCode = deck[i % deck.length]; // 50ペア等でもエラーにならないようループ
+        let cardCode = deck[i % deck.length]; 
         aiImageUrls.push(`https://deckofcardsapi.com/static/img/${cardCode}.png`);
       }
     }
@@ -519,7 +524,9 @@ io.on('connection', (socket) => {
     room.cpuMemory = {};
 
     io.to(roomName).emit('ai_status', "生成完了！ゲームスタート！");
+    
     io.to(roomName).emit('game_started'); 
+    
     io.to(roomName).emit('update_game', { 
       cards: room.cards, 
       scores: room.scores, 
@@ -557,7 +564,11 @@ io.on('connection', (socket) => {
       return c.id === cardId;
     });
 
-    if (card.isOpen || card.isMatched) {
+    if (card.isOpen) {
+      return;
+    }
+    
+    if (card.isMatched) {
       return;
     }
 
@@ -671,7 +682,6 @@ io.on('connection', (socket) => {
   });
 });
 
-// Render対応のポート設定
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`完全版サーバー起動完了！ ポート番号: ${PORT}`);

@@ -22,6 +22,7 @@
       <span class="title-match">MATCH</span>
       <span class="title-ai">AI</span>
     </h1>
+    
     <p class="title-sub">脳神経を刺激する、次世代の間違い探し。</p>
 
     <div id="auth-section" class="compact-auth">
@@ -54,13 +55,21 @@
     </div>
 
     <div class="menu-group">
-      <label>✨ テーマ（風景、トランプ、ロボット、顔、その他）</label>
-      <input type="text" id="theme-input" placeholder="例: トランプ、ロボット、または好きな言葉(猫)">
+      <label>🎲 ゲームの種類</label>
+      <select id="game-mode-select" onchange="toggleThemeInput()">
+        <option value="trump">🃏 本格トランプモード (おすすめ！)</option>
+        <option value="ai">🤖 AIテーマ生成モード</option>
+      </select>
+    </div>
+
+    <div class="menu-group" id="theme-input-group" style="display: none;">
+      <label>✨ テーマを入力</label>
+      <input type="text" id="theme-input" placeholder="例: 風景、ロボット、猫など">
     </div>
 
     <div class="menu-group">
       <label>🃏 ペア数（最大50）</label>
-      <input type="number" id="pairs-input" value="6" min="2" max="50">
+      <input type="number" id="pairs-input" value="10" min="2" max="50">
     </div>
 
     <button class="btn-main" onclick="startGame('online')">🌐 オンライン対戦を開始</button>
@@ -221,25 +230,30 @@
     // UIテーマの初期化・読み込み
     // =========================================
     let myUiTheme = localStorage.getItem('savedUiTheme');
+    
     if (!myUiTheme) {
       myUiTheme = 'default';
     }
+    
     document.getElementById('ui-theme-input').value = myUiTheme;
     document.body.className = `theme-${myUiTheme}`;
 
 
     // その他の変数の初期化
     let myPlayerName = localStorage.getItem('savedPlayerName');
+    
     if (!myPlayerName) {
       myPlayerName = '名無しプレイヤー';
     }
 
     let myCpuLevel = localStorage.getItem('savedCpuLevel');
+    
     if (!myCpuLevel) {
       myCpuLevel = 'normal';
     }
 
     let myRoomName = localStorage.getItem('savedRoomName');
+    
     if (!myRoomName) {
       myRoomName = '';
     }
@@ -250,6 +264,17 @@
     document.getElementById('player-name-input').value = myPlayerName;
     document.getElementById('cpu-level-input').value = myCpuLevel;
     document.getElementById('room-input').value = myRoomName;
+
+    function toggleThemeInput() {
+      const mode = document.getElementById('game-mode-select').value;
+      const themeInputGroup = document.getElementById('theme-input-group');
+      
+      if (mode === 'ai') {
+        themeInputGroup.style.display = 'block';
+      } else {
+        themeInputGroup.style.display = 'none';
+      }
+    }
 
     function openSetup() {
       document.getElementById('home-screen').style.display = 'none';
@@ -268,24 +293,29 @@
         } else {
           myPlayerName = "ゲスト";
         }
+        
         document.getElementById('user-info-text').innerText = `✅ ${myPlayerName} でログイン中`;
         document.getElementById('btn-login').style.display = 'none';
         document.getElementById('btn-logout').style.display = 'inline-block';
         document.getElementById('player-name-input').value = myPlayerName;
         document.getElementById('player-name-input').disabled = true;
+        
         loadStatsFromFirebase();
       } else {
         let savedName = localStorage.getItem('savedPlayerName');
+        
         if (savedName) {
           myPlayerName = savedName;
         } else {
           myPlayerName = '名無しプレイヤー';
         }
+        
         document.getElementById('user-info-text').innerText = "ゲストとしてプレイ中";
         document.getElementById('btn-login').style.display = 'inline-block';
         document.getElementById('btn-logout').style.display = 'none';
         document.getElementById('player-name-input').value = myPlayerName;
         document.getElementById('player-name-input').disabled = false;
+        
         loadStatsFromFirebase();
       }
     });
@@ -314,11 +344,13 @@
 
       if (!firebase.auth().currentUser) {
         let inputName = document.getElementById('player-name-input').value;
+        
         if (!inputName) {
           myPlayerName = '名無しプレイヤー';
         } else {
           myPlayerName = inputName;
         }
+        
         localStorage.setItem('savedPlayerName', myPlayerName);
       }
       
@@ -326,6 +358,7 @@
       localStorage.setItem('savedCpuLevel', myCpuLevel);
       
       loadStatsFromFirebase();
+      
       document.getElementById('settings-modal').style.display = 'none';
     }
 
@@ -378,6 +411,7 @@
       db.collection("players").doc(myPlayerName).get().then((doc) => {
         if (doc.exists) {
           const data = doc.data();
+          
           if (data.wins) {
             myWins = data.wins;
           } else {
@@ -428,9 +462,14 @@
 
       currentGameMode = mode; 
 
-      let theme = document.getElementById('theme-input').value;
-      if (!theme) {
-        theme = "おまかせ";
+      let theme = "トランプ";
+      const gameType = document.getElementById('game-mode-select').value;
+      
+      if (gameType === 'ai') {
+        theme = document.getElementById('theme-input').value;
+        if (!theme) {
+          theme = "おまかせ";
+        }
       }
 
       let pairs = parseInt(document.getElementById('pairs-input').value);
@@ -441,11 +480,13 @@
       if (pairs < 2) {
         pairs = 2;
       }
+      
       if (pairs > 50) {
         pairs = 50;
       }
 
       let modeText = "";
+      
       if (mode === 'cpu') {
         modeText = `💻 CPU対戦 (${myCpuLevel})`; 
       } else if (mode === 'local') {
@@ -472,6 +513,7 @@
 
     function playAgain() {
       playSound('flip');
+      
       document.getElementById('result-modal').style.display = 'none';
       document.getElementById('loading-text').innerHTML = `カードをシャッフル中...<br>🔄`;
       document.getElementById('loading-overlay').style.display = 'flex'; 
@@ -494,24 +536,28 @@
       const { cards, scores, currentTurn, players, theme } = state;
       const board = document.getElementById('game-board');
       
-      if (theme === 'トランプ' || theme === 'カード') {
+      if (theme === 'トランプ') {
+        document.body.className = 'theme-cards';
+      } else if (theme === 'カード') {
         document.body.className = 'theme-cards';
       } else {
         document.body.className = `theme-${myUiTheme}`;
       }
 
-      // =========================================
-      // ★超重要：カードの列数を美しく計算する魔法！
-      // =========================================
       const totalCards = cards.length;
-      let cols = 4; // 最低でも4列
+      let cols = 4;
 
-      // 枚数に応じて、一番長方形（正方形）に近くなる列数を決める
       if (totalCards <= 12) {
+        cols = 4; 
+      } else if (totalCards <= 16) {
         cols = 4; 
       } else if (totalCards <= 20) {
         cols = 5; 
+      } else if (totalCards <= 24) {
+        cols = 6; 
       } else if (totalCards <= 30) {
+        cols = 6; 
+      } else if (totalCards <= 36) {
         cols = 6; 
       } else if (totalCards <= 42) {
         cols = 7; 
@@ -520,11 +566,11 @@
       } else if (totalCards <= 72) {
         cols = 9; 
       } else {
-        cols = 10; // 100枚の時は10x10になる
+        cols = 10; 
       }
 
-      // 計算した列数を使ってグリッドを作成（最大95pxで大きく見やすく！）
-      board.style.gridTemplateColumns = `repeat(${cols}, minmax(40px, 95px))`;
+      board.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      board.style.maxWidth = `${cols * 85}px`; 
 
 
       let p1Name = "Player 1";
@@ -554,6 +600,7 @@
         } else {
           turnMsg.innerText = "🔵 P2 の番です！"; 
         }
+        
         turnMsg.style.color = "var(--label-color)"; 
       } 
       else if (currentTurn === myId) {
@@ -655,6 +702,7 @@
       }
       
       let p1Name = "P1";
+      
       if (players[0] === 'CPU') {
         p1Name = "CPU";
       } else if (gameMode === 'local') {
@@ -662,6 +710,7 @@
       }
 
       let p2Name = "P2";
+      
       if (players[1] === 'CPU') {
         p2Name = "CPU";
       } else if (gameMode === 'local') {

@@ -1,5 +1,5 @@
 /* =========================================
-   style.css (第12弾：トランプ完全対応＆正方形維持 / 真の完全フル展開版)
+   style.css (第14弾：完全無圧縮・フル展開版)
    ========================================= */
 
 /* =========================================
@@ -157,20 +157,17 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: background 0.8s ease, color 0.8s ease;
+  transition: background 0.8s ease;
+  transition: color 0.8s ease;
 }
 
-/* 背景の動く装飾（カードパターン） */
 .bg-decoration {
   position: fixed;
   top: 50%;
   left: 50%;
   width: 200vmax;
   height: 200vmax;
-  background-image: 
-    repeating-linear-gradient(45deg, var(--bg-pattern-color) 0px, transparent 2px, transparent 10px),
-    repeating-linear-gradient(-45deg, var(--bg-pattern-color) 0px, transparent 2px, transparent 10px),
-    linear-gradient(to bottom, transparent, var(--bg-pattern-color));
+  background-image: repeating-linear-gradient(45deg, var(--bg-pattern-color) 0px, transparent 2px, transparent 10px), repeating-linear-gradient(-45deg, var(--bg-pattern-color) 0px, transparent 2px, transparent 10px), linear-gradient(to bottom, transparent, var(--bg-pattern-color));
   background-size: 100px 100px, 100px 100px, 100% 100%;
   opacity: 0.3;
   z-index: -1; 
@@ -196,7 +193,7 @@ body {
 }
 
 /* =========================================
-   2. 各種画面のコンテナ（すりガラス強化）
+   2. 各種画面のコンテナ
    ========================================= */
 .glass-container {
   background: var(--glass-bg); 
@@ -238,33 +235,31 @@ body {
   }
 }
 
-#home-screen, 
-#setup-screen, 
-#game-screen {
+#home-screen {
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+}
+
+#setup-screen {
   display: none;
 }
 
-#home-screen {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+#game-screen {
+  display: none;
 }
 
 /* =========================================
    3. タイトルロゴのデザイン
    ========================================= */
 .main-title {
-  font-size: 48px;
-  font-weight: 900;
-  letter-spacing: 4px;
+  font-size: 48px; 
+  font-weight: 900; 
+  letter-spacing: 4px; 
   line-height: 1.2;
-  margin-bottom: 10px;
+  margin-bottom: 10px; 
   text-transform: uppercase;
-  text-shadow: 
-    0 0 10px var(--title-glow),
-    0 0 20px var(--title-glow),
-    0 0 40px var(--title-accent-1),
-    0 0 80px var(--title-accent-2);
+  text-shadow: 0 0 10px var(--title-glow), 0 0 20px var(--title-glow), 0 0 40px var(--title-accent-1), 0 0 80px var(--title-accent-2);
 }
 
 .title-neural { 
@@ -279,67 +274,67 @@ body {
   color: var(--title-accent-2); 
 }
 
-.title-sub {
-  font-size: 16px;
-  letter-spacing: 2px;
-  opacity: 0.8;
-  margin-bottom: 40px;
-  font-weight: bold;
+.title-sub { 
+  font-size: 16px; 
+  letter-spacing: 2px; 
+  opacity: 0.8; 
+  margin-bottom: 40px; 
+  font-weight: bold; 
 }
 
-.game-title {
-  font-size: 32px;
-  margin-bottom: 20px;
-  text-shadow: 0 0 15px var(--title-glow);
+.game-title { 
+  font-size: 32px; 
+  margin-bottom: 20px; 
+  text-shadow: 0 0 15px var(--title-glow); 
 }
 
 /* =========================================
    4. ボタンのデザイン
    ========================================= */
-button {
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+button { 
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
   color: white; 
-  font-family: inherit;
+  font-family: inherit; 
 }
 
-button:hover {
-  transform: translateY(-5px) scale(1.02);
-  filter: brightness(1.2);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+button:hover { 
+  transform: translateY(-5px) scale(1.02); 
+  filter: brightness(1.2); 
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); 
 }
 
-button:active {
-  transform: translateY(2px) scale(0.98);
+button:active { 
+  transform: translateY(2px) scale(0.98); 
 }
 
-.play-button-wrapper {
-  width: 100%;
-  margin-bottom: 30px;
+.play-button-wrapper { 
+  width: 100%; 
+  margin-bottom: 30px; 
 }
 
 .btn-play-huge {
-  background: var(--btn-play-bg);
-  padding: 25px 40px;
-  border: none;
+  background: var(--btn-play-bg); 
+  padding: 25px 40px; 
+  border: none; 
   border-radius: 15px;
-  cursor: pointer;
-  font-weight: 900;
-  width: 100%;
+  cursor: pointer; 
+  font-weight: 900; 
+  width: 100%; 
   box-shadow: 0 10px 30px var(--btn-play-glow);
-  position: relative;
-  overflow: hidden;
+  position: relative; 
+  overflow: hidden; 
   animation: pulse 2s infinite; 
 }
 
 .btn-play-huge::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
+  content: ''; 
+  position: absolute; 
+  top: -50%; 
+  left: -50%; 
+  width: 200%; 
   height: 200%;
   background: linear-gradient(to bottom right, rgba(255,255,255,0.4), transparent, transparent);
-  transform: rotate(45deg);
+  transform: rotate(45deg); 
   animation: shine 3s infinite;
 }
 
@@ -364,9 +359,7 @@ button:active {
   }
 }
 
-.btn-main, 
-.btn-cpu, 
-.btn-local { 
+.btn-main {
   padding: 18px; 
   font-size: 18px; 
   border: none; 
@@ -376,29 +369,43 @@ button:active {
   width: 100%; 
   margin-bottom: 15px; 
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-.btn-main { 
   background: var(--btn-main-bg); 
 }
 
-.btn-cpu { 
+.btn-cpu {
+  padding: 18px; 
+  font-size: 18px; 
+  border: none; 
+  border-radius: 12px; 
+  cursor: pointer; 
+  font-weight: bold; 
+  width: 100%; 
+  margin-bottom: 15px; 
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   background: var(--btn-cpu-bg); 
 }
 
-.btn-local { 
+.btn-local {
+  padding: 18px; 
+  font-size: 18px; 
+  border: none; 
+  border-radius: 12px; 
+  cursor: pointer; 
+  font-weight: bold; 
+  width: 100%; 
+  margin-bottom: 15px; 
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   background: var(--btn-local-bg); 
 }
 
-.button-row {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  gap: 15px;
+.button-row { 
+  display: flex; 
+  justify-content: space-between; 
+  width: 100%; 
+  gap: 15px; 
 }
 
-.btn-settings, 
-.btn-ranking { 
+.btn-settings {
   background: var(--btn-settings-bg); 
   color: var(--text-color); 
   padding: 15px; 
@@ -411,29 +418,42 @@ button:active {
   transition: all 0.3s;
 }
 
-.btn-ranking { 
+.btn-ranking {
+  background: var(--btn-settings-bg); 
   color: var(--label-color); 
+  padding: 15px; 
+  font-size: 16px; 
+  border: 1px solid var(--glass-border); 
+  border-radius: 12px; 
+  cursor: pointer; 
+  font-weight: bold; 
+  width: 48%; 
+  transition: all 0.3s;
 }
 
-.btn-settings:hover, 
+.btn-settings:hover {
+  background: var(--glass-border); 
+  border-color: var(--title-accent-1); 
+}
+
 .btn-ranking:hover {
-  background: var(--glass-border);
-  border-color: var(--title-accent-1);
+  background: var(--glass-border); 
+  border-color: var(--title-accent-1); 
 }
 
-.btn-back {
+.btn-back { 
   background: transparent; 
   color: var(--text-color); 
   border: none; 
-  font-size: 16px;
+  font-size: 16px; 
   cursor: pointer; 
   margin-bottom: 20px; 
   text-align: left; 
   width: 100%; 
-  padding: 0;
+  padding: 0; 
   opacity: 0.7; 
   display: flex; 
-  align-items: center;
+  align-items: center; 
 }
 
 .btn-back:hover { 
@@ -441,54 +461,54 @@ button:active {
   transform: translateX(-5px); 
 }
 
-.btn-google-sm {
+.btn-google-sm { 
   background: #4285f4; 
   color: white; 
   padding: 8px 15px; 
-  font-size: 13px;
+  font-size: 13px; 
   border: none; 
   border-radius: 6px; 
   cursor: pointer; 
-  font-weight: bold;
+  font-weight: bold; 
 }
 
-.btn-logout-sm {
+.btn-logout-sm { 
   background: transparent; 
   color: #ff5252; 
   padding: 8px 15px; 
-  font-size: 13px;
+  font-size: 13px; 
   border: 1px solid #ff5252; 
   border-radius: 6px; 
   cursor: pointer; 
-  font-weight: bold;
+  font-weight: bold; 
 }
 
 /* =========================================
    5. 入力フォームとログインエリア
    ========================================= */
 .compact-auth {
-  background: var(--input-bg);
-  padding: 10px 15px;
-  border-radius: 10px;
+  background: var(--input-bg); 
+  padding: 10px 15px; 
+  border-radius: 10px; 
   margin-bottom: 30px;
-  border-left: 3px solid var(--label-color);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
+  border-left: 3px solid var(--label-color); 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  width: 100%; 
   box-sizing: border-box;
 }
 
-#user-info-text {
-  margin: 0;
-  font-size: 14px;
-  font-weight: bold;
+#user-info-text { 
+  margin: 0; 
+  font-size: 14px; 
+  font-weight: bold; 
 }
 
 .menu-group { 
   margin-bottom: 25px; 
   text-align: left; 
-  width: 100%;
+  width: 100%; 
 }
 
 .menu-group label { 
@@ -497,12 +517,10 @@ button:active {
   margin-bottom: 10px; 
   color: var(--label-color); 
   font-size: 15px; 
-  letter-spacing: 1px;
+  letter-spacing: 1px; 
 }
 
-input[type="text"], 
-input[type="number"], 
-select { 
+input[type="text"] {
   background: var(--input-bg); 
   color: var(--text-color); 
   padding: 15px; 
@@ -514,11 +532,47 @@ select {
   transition: all 0.3s;
 }
 
-input[type="text"]:focus, 
-input[type="number"]:focus, 
-select:focus { 
+input[type="number"] {
+  background: var(--input-bg); 
+  color: var(--text-color); 
+  padding: 15px; 
+  font-size: 16px; 
+  border-radius: 10px; 
+  border: 2px solid var(--input-border); 
+  width: 100%; 
+  box-sizing: border-box; 
+  transition: all 0.3s;
+}
+
+select {
+  background: var(--input-bg); 
+  color: var(--text-color); 
+  padding: 15px; 
+  font-size: 16px; 
+  border-radius: 10px; 
+  border: 2px solid var(--input-border); 
+  width: 100%; 
+  box-sizing: border-box; 
+  transition: all 0.3s;
+}
+
+input[type="text"]:focus {
   outline: none; 
-  border-color: var(--input-focus);
+  border-color: var(--input-focus); 
+  box-shadow: 0 0 15px var(--modal-glow); 
+  background: var(--input-bg);
+}
+
+input[type="number"]:focus {
+  outline: none; 
+  border-color: var(--input-focus); 
+  box-shadow: 0 0 15px var(--modal-glow); 
+  background: var(--input-bg);
+}
+
+select:focus {
+  outline: none; 
+  border-color: var(--input-focus); 
   box-shadow: 0 0 15px var(--modal-glow); 
   background: var(--input-bg);
 }
@@ -526,10 +580,7 @@ select:focus {
 /* =========================================
    6. モーダルとゲーム画面
    ========================================= */
-#settings-modal, 
-#ranking-modal, 
-#result-modal, 
-#loading-overlay { 
+#settings-modal {
   display: none; 
   position: fixed; 
   top: 0; 
@@ -542,10 +593,45 @@ select:focus {
   align-items: center; 
 }
 
-#loading-overlay, 
-#result-modal { 
-  flex-direction: column; 
+#ranking-modal {
+  display: none; 
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%; 
+  background: rgba(0,0,0,0.85); 
+  z-index: 2000; 
+  justify-content: center; 
+  align-items: center; 
+}
+
+#result-modal {
+  display: none; 
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%; 
+  background: rgba(0,0,0,0.85); 
   z-index: 3000; 
+  justify-content: center; 
+  align-items: center; 
+  flex-direction: column; 
+}
+
+#loading-overlay {
+  display: none; 
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%; 
+  background: rgba(0,0,0,0.85); 
+  z-index: 3000; 
+  justify-content: center; 
+  align-items: center; 
+  flex-direction: column; 
 }
 
 .settings-content { 
@@ -560,9 +646,9 @@ select:focus {
   animation: fadeIn 0.3s ease-out;
 }
 
-#ranking-modal .settings-content {
+#ranking-modal .settings-content { 
   box-shadow: 0 0 50px var(--title-accent-2); 
-  border: 1px solid var(--title-accent-2);
+  border: 1px solid var(--title-accent-2); 
 }
 
 .settings-content h2 { 
@@ -571,26 +657,26 @@ select:focus {
   border-bottom: 2px solid var(--glass-border); 
   padding-bottom: 20px; 
   margin-bottom: 30px; 
-  font-size: 28px;
+  font-size: 28px; 
 }
 
-#player-stats {
+#player-stats { 
   font-size: 24px; 
   font-weight: bold; 
-  color: var(--label-color);
+  color: var(--label-color); 
   margin-top: 20px; 
   margin-bottom: 30px; 
-  text-align: center;
+  text-align: center; 
 }
 
-#ranking-list {
+#ranking-list { 
   font-size: 18px; 
   line-height: 1.8; 
   margin-bottom: 20px; 
-  background: var(--input-bg);
+  background: var(--input-bg); 
   padding: 20px; 
   border-radius: 15px; 
-  color: var(--text-color);
+  color: var(--text-color); 
 }
 
 .close-btn { 
@@ -621,45 +707,40 @@ select:focus {
   margin-bottom: 10px; 
   font-size: 24px; 
   font-weight: bold; 
-  background: var(--input-bg);
+  background: var(--input-bg); 
   padding: 15px 30px; 
   border-radius: 15px; 
   border: 1px solid var(--glass-border);
 }
 
-#turn-msg {
+#turn-msg { 
   height: 40px; 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 10px;
-  margin-bottom: 20px;
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  margin-top: 10px; 
+  margin-bottom: 20px; 
 }
 
 #game-board {
   display: grid; 
-  /* JavaScriptから動的に列数を変更するため、ここではgapだけ指定 */
   gap: 12px; 
   justify-content: center; 
   margin: 0 auto;
-  width: 100%;
-  max-width: 1100px; /* カードが多い時用に少し広げる */
   padding-bottom: 40px;
 }
 
 .card { 
-  /* ★重要：正方形を絶対に維持する魔法 */
   aspect-ratio: 1 / 1; 
   width: 100%;
-  /* どんなに画面が広くても、カードが大きくなりすぎないように制限 */
-  max-width: 95px; 
   background: var(--card-bg); 
-  border-radius: 12px; 
+  border-radius: 8px; 
   cursor: pointer; 
   display: flex; 
   justify-content: center; 
   align-items: center; 
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s; 
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: box-shadow 0.4s; 
   box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
   position: relative;
 }
@@ -672,7 +753,7 @@ select:focus {
   right: 0; 
   bottom: 0;
   background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.1) 0px, transparent 2px, transparent 10px);
-  border-radius: 12px; 
+  border-radius: 8px; 
   pointer-events: none;
 }
 
@@ -693,31 +774,32 @@ select:focus {
   transform: rotateY(180deg) scale(0.95); 
 }
 
-/* ★AI生成画像などの通常画像 */
+/* 基本の画像（AI画像など）は切り取って正方形に */
 .card img { 
   width: 100%; 
   height: 100%; 
-  object-fit: cover; /* 画像を正方形に切り取る */
+  object-fit: cover; 
   display: none; 
-  border-radius: 10px; 
+  border-radius: 8px; 
 }
 
-/* ★超重要：トランプテーマの時だけ、画像を切り取らずに全体を表示する！ */
+/* ★★★ トランプテーマの時は、絶対に画像を切らない！ ★★★ */
 .theme-cards .card img {
-  object-fit: contain; /* はみ出さずに全体を縮小して入れる */
-  background-color: white; /* 隙間を白で埋めて、本物のトランプっぽくする */
-  padding: 4px; /* フチに少し余白を作る */
-  border-radius: 10px;
+  object-fit: contain; 
+  background-color: white; 
+  padding: 6px; 
+  border-radius: 8px;
   box-sizing: border-box;
 }
 
-/* トランプの時は、めくったカードの背景を白にする */
 .theme-cards .card.open {
   background-color: white;
 }
 
+.card.open img {
+  display: block; 
+}
 
-.card.open img, 
 .card.matched img { 
   display: block; 
 }
