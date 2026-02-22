@@ -581,27 +581,28 @@
       
       const turnMsg = document.getElementById('turn-msg');
       
-      if (currentTurn.startsWith(myId)) {
+      if (currentTurn === myId) {
+        turnMsg.innerText = "あなたの番です！"; 
+        turnMsg.style.color = "var(--label-color)";
         board.classList.remove('disabled'); 
-        
+      } 
+      // ② 1画面で2人プレイ（localモード）の時
+      else if (currentTurn.startsWith(myId) && currentTurn.includes('_P')) {
+        board.classList.remove('disabled'); 
         if (currentTurn.endsWith('_P1')) {
           turnMsg.innerText = "🔴 P1 の番です！"; 
         } else {
           turnMsg.innerText = "🔵 P2 の番です！"; 
         }
-        
         turnMsg.style.color = "var(--label-color)"; 
       } 
-      else if (currentTurn === myId) {
-        turnMsg.innerText = "あなたの番です！"; 
-        turnMsg.style.color = "var(--label-color)";
-        board.classList.remove('disabled'); 
-      } 
+      // ③ CPUの番
       else if (currentTurn === 'CPU') {
         turnMsg.innerText = "💻 CPUが思考中..."; 
         turnMsg.style.color = "var(--text-color)";
         board.classList.add('disabled'); 
       } 
+      // ④ オンライン対戦の相手の番
       else {
         turnMsg.innerText = "相手の思考中..."; 
         turnMsg.style.color = "var(--text-color)";
