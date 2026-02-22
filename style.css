@@ -1,5 +1,5 @@
 /* =========================================
-   style.css (第15弾：トランプ反転修正＆美麗グリッド整列 / 完全無圧縮版)
+   style.css (第16弾：完全固定・美麗整列・反転修正 / 完全無圧縮版)
    ========================================= */
 
 /* =========================================
@@ -698,7 +698,7 @@ select:focus {
 }
 
 /* =========================================
-   7. ゲーム画面のデザインと揺れ防止
+   7. ゲーム画面のデザイン（サイズ固定＆Flexbox整列）
    ========================================= */
 #score-board { 
   display: inline-flex; 
@@ -722,17 +722,22 @@ select:focus {
   margin-bottom: 20px; 
 }
 
+/* ★★★ 重要：Flexboxを使って、余ったカードを中央にピラミッド状に寄せる！ ★★★ */
 #game-board {
-  display: grid; 
+  display: flex; 
+  flex-wrap: wrap; 
+  justify-content: center; /* これが余ったカードを中央に集める魔法 */
   gap: 12px; 
-  justify-content: center; 
   margin: 0 auto;
   padding-bottom: 40px;
 }
 
 .card { 
-  aspect-ratio: 1 / 1; 
-  width: 100%;
+  /* ★★★ 超重要：大きさを絶対に固定！ガタガタ動かなくする魔法 ★★★ */
+  width: 80px; 
+  height: 80px; 
+  flex-shrink: 0; /* 画面が狭くても絶対に潰れないようにする */
+  
   background: var(--card-bg); 
   border-radius: 8px; 
   cursor: pointer; 
@@ -740,11 +745,13 @@ select:focus {
   justify-content: center; 
   align-items: center; 
   transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  transition: box-shadow 0.4s; 
   box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
   position: relative;
+  /* 3Dフリップを綺麗に見せるための設定 */
+  transform-style: preserve-3d; 
 }
 
+/* カードの裏面の模様 */
 .card::before {
   content: ''; 
   position: absolute; 
@@ -755,11 +762,15 @@ select:focus {
   background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.1) 0px, transparent 2px, transparent 10px);
   border-radius: 8px; 
   pointer-events: none;
+  /* 開いた時は裏面を隠す */
+  backface-visibility: hidden; 
+  z-index: 2;
 }
 
+/* ★修正：めくってなくても、マウスを乗せた時に「光る」だけにする（大きくしない） */
 .card:hover { 
-  transform: scale(1.08) translateY(-5px); 
-  box-shadow: 0 15px 30px rgba(0,0,0,0.4); 
+  filter: brightness(1.2); 
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4); 
 }
 
 .card.open { 
@@ -768,26 +779,44 @@ select:focus {
   box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
 }
 
+/* 開いた時は模様を消す */
+.card.open::before {
+  display: none; 
+}
+
+.card.matched::before {
+  display: none; 
+}
+
 .card.matched { 
   opacity: 0.6; 
   filter: grayscale(80%); 
-  transform: rotateY(180deg) scale(0.95); 
+  transform: rotateY(180deg); 
 }
 
-/* 基本の画像（AI画像など）は切り取って正方形に */
+/* ★★★ 超重要：画像の「反転」と「ガタガタ」を直す魔法 ★★★ */
 .card img { 
   width: 100%; 
   height: 100%; 
   object-fit: cover; 
-  display: none; 
   border-radius: 8px; 
+  position: absolute; 
+  inset: 0; 
+  
+  /* display: none をやめて、透明にしておく！これで最初からサイズが計算されてガタガタしない！ */
+  opacity: 0; 
+  visibility: hidden; 
+  transition: opacity 0.2s; 
+  
+  /* カードが180度回るのを打ち消すため、画像もあらかじめ180度回しておく（鏡文字防止！） */
+  transform: rotateY(180deg); 
+  backface-visibility: hidden; 
 }
 
-/* ★★★ トランプテーマの時は、絶対に画像を切らない！ ★★★ */
 .theme-cards .card img {
   object-fit: contain; 
   background-color: white; 
-  padding: 6px; 
+  padding: 4px; 
   border-radius: 8px;
   box-sizing: border-box;
 }
@@ -796,16 +825,15 @@ select:focus {
   background-color: white;
 }
 
-/* ★★★ 追加修正：開いたカードの画像をさらに逆回転させて正しく表示する ★★★ */
+/* めくった時、画像を見えるようにするだけ（サイズは変わらない） */
 .card.open img {
-  display: block;
-  transform: rotateY(180deg);
+  opacity: 1; 
+  visibility: visible; 
 }
 
-/* ★★★ 追加修正：マッチしたカードの画像も同様に逆回転させる ★★★ */
 .card.matched img { 
-  display: block;
-  transform: rotateY(180deg);
+  opacity: 1; 
+  visibility: visible; 
 }
 
 .disabled { 

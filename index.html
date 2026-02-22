@@ -545,21 +545,20 @@
       }
 
       // =========================================
-      // ★超重要：可能な限り綺麗な長方形を作る自動計算！
+      // ★超重要：Flexboxで、端数を綺麗に中央に集める魔法（ピラミッド化）
       // =========================================
       const totalCards = cards.length;
       
-      // 平方根を計算して切り上げることで、正方形に近い列数を自動で決定
+      // 平方根を使って、最も正方形に近い「列数」を計算する
       let cols = Math.ceil(Math.sqrt(totalCards));
       
-      // スマホなどで見づらくならないよう、最低でも3列は確保する
-      cols = Math.max(3, cols);
+      // スマホでも見やすいように、最低でも4列は確保する
+      cols = Math.max(4, cols);
 
-      // 計算した列数でグリッドを作成
-      board.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-      
-      // カードの幅(約85px) + 隙間(12px) を考慮して、全体の最大幅を設定
-      board.style.maxWidth = `${cols * 95}px`; 
+      // Flexboxのコンテナの「最大横幅」を計算する。
+      // カード幅(80px) + 隙間(12px) = 92px。 これを列数分かける。
+      // この幅で折り返すことで、余ったカードが自動的に中央に整列する！
+      board.style.maxWidth = `${cols * (80 + 12)}px`; 
 
 
       let p1Name = "Player 1";
