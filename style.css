@@ -1,5 +1,5 @@
 /* =========================================
-   style.css (第16弾：完全固定・美麗整列・反転修正 / 完全無圧縮版)
+   style.css (第17弾：画面酔い防止・フラット安定版 / 完全無圧縮版)
    ========================================= */
 
 /* =========================================
@@ -206,7 +206,10 @@ body {
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); 
   width: 100%; 
   max-width: 600px; 
-  animation: fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1); 
+  
+  /* ★修正：画面が迫ってくるようなアニメーション（scale）を削除！酔いを防止 */
+  animation: fadeIn 0.6s ease-out; 
+  
   transition: all 0.5s ease;
   position: relative;
   overflow: hidden;
@@ -224,14 +227,15 @@ body {
   opacity: 0.5;
 }
 
+/* ★修正：scale(0.95)を削除し、純粋にスッと現れるだけにする */
 @keyframes fadeIn {
   0% { 
     opacity: 0; 
-    transform: translateY(40px) scale(0.95); 
+    transform: translateY(20px); 
   }
   100% { 
     opacity: 1; 
-    transform: translateY(0) scale(1); 
+    transform: translateY(0); 
   }
 }
 
@@ -292,19 +296,20 @@ body {
    4. ボタンのデザイン
    ========================================= */
 button { 
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+  transition: all 0.2s ease; 
   color: white; 
   font-family: inherit; 
 }
 
+/* ★修正：マウスを乗せた時にボタンが大きくなる（scale）のを完全に削除 */
 button:hover { 
-  transform: translateY(-5px) scale(1.02); 
   filter: brightness(1.2); 
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); 
+  transform: translateY(-2px); 
 }
 
 button:active { 
-  transform: translateY(2px) scale(0.98); 
+  transform: translateY(1px); 
 }
 
 .play-button-wrapper { 
@@ -338,6 +343,7 @@ button:active {
   animation: shine 3s infinite;
 }
 
+/* pulseもサイズは変えず、光（影）だけが変化する安全な設定 */
 @keyframes pulse {
   0% { 
     box-shadow: 0 10px 30px var(--btn-play-glow); 
@@ -643,7 +649,9 @@ select:focus {
   box-shadow: 0 0 50px var(--modal-glow); 
   width: 400px; 
   border: 1px solid var(--modal-glow); 
-  animation: fadeIn 0.3s ease-out;
+  
+  /* ★修正：ここもscale(拡大)のアニメーションを削除しました */
+  animation: fadeIn 0.3s ease-out; 
 }
 
 #ranking-modal .settings-content { 
@@ -698,7 +706,7 @@ select:focus {
 }
 
 /* =========================================
-   7. ゲーム画面のデザイン（サイズ固定＆Flexbox整列）
+   7. ゲーム画面のデザイン（サイズ完全固定）
    ========================================= */
 #score-board { 
   display: inline-flex; 
@@ -722,21 +730,20 @@ select:focus {
   margin-bottom: 20px; 
 }
 
-/* ★★★ 重要：Flexboxを使って、余ったカードを中央にピラミッド状に寄せる！ ★★★ */
 #game-board {
   display: flex; 
   flex-wrap: wrap; 
-  justify-content: center; /* これが余ったカードを中央に集める魔法 */
+  justify-content: center; 
   gap: 12px; 
   margin: 0 auto;
   padding-bottom: 40px;
 }
 
 .card { 
-  /* ★★★ 超重要：大きさを絶対に固定！ガタガタ動かなくする魔法 ★★★ */
+  /* 大きさを絶対に固定する魔法 */
   width: 80px; 
   height: 80px; 
-  flex-shrink: 0; /* 画面が狭くても絶対に潰れないようにする */
+  flex-shrink: 0; 
   
   background: var(--card-bg); 
   border-radius: 8px; 
@@ -744,14 +751,15 @@ select:focus {
   display: flex; 
   justify-content: center; 
   align-items: center; 
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  /* ★修正：飛び出すようなバウンドアニメーションを完全にやめ、平面的にスッと裏返るようにしました */
+  transition: transform 0.4s ease-out, box-shadow 0.4s ease-out, filter 0.2s ease-out;
+  
   box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
   position: relative;
-  /* 3Dフリップを綺麗に見せるための設定 */
   transform-style: preserve-3d; 
 }
 
-/* カードの裏面の模様 */
 .card::before {
   content: ''; 
   position: absolute; 
@@ -762,12 +770,11 @@ select:focus {
   background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.1) 0px, transparent 2px, transparent 10px);
   border-radius: 8px; 
   pointer-events: none;
-  /* 開いた時は裏面を隠す */
   backface-visibility: hidden; 
   z-index: 2;
 }
 
-/* ★修正：めくってなくても、マウスを乗せた時に「光る」だけにする（大きくしない） */
+/* ★修正：マウスを乗せても一切大きくしない！少し明るくなるだけに留める */
 .card:hover { 
   filter: brightness(1.2); 
   box-shadow: 0 8px 20px rgba(0,0,0,0.4); 
@@ -776,10 +783,9 @@ select:focus {
 .card.open { 
   background: white; 
   transform: rotateY(180deg); 
-  box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
 }
 
-/* 開いた時は模様を消す */
 .card.open::before {
   display: none; 
 }
@@ -788,13 +794,13 @@ select:focus {
   display: none; 
 }
 
+/* ★修正：揃った時にも一切小さくしない！そのままの大きさをキープ */
 .card.matched { 
   opacity: 0.6; 
   filter: grayscale(80%); 
   transform: rotateY(180deg); 
 }
 
-/* ★★★ 超重要：画像の「反転」と「ガタガタ」を直す魔法 ★★★ */
 .card img { 
   width: 100%; 
   height: 100%; 
@@ -803,12 +809,12 @@ select:focus {
   position: absolute; 
   inset: 0; 
   
-  /* display: none をやめて、透明にしておく！これで最初からサイズが計算されてガタガタしない！ */
+  /* 画像は見えない時も裏に存在させておくことで、画面がガタつかない */
   opacity: 0; 
   visibility: hidden; 
   transition: opacity 0.2s; 
   
-  /* カードが180度回るのを打ち消すため、画像もあらかじめ180度回しておく（鏡文字防止！） */
+  /* 鏡文字にならないように画像自体をあらかじめ反転させておく */
   transform: rotateY(180deg); 
   backface-visibility: hidden; 
 }
@@ -825,7 +831,6 @@ select:focus {
   background-color: white;
 }
 
-/* めくった時、画像を見えるようにするだけ（サイズは変わらない） */
 .card.open img {
   opacity: 1; 
   visibility: visible; 
