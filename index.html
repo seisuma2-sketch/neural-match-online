@@ -470,7 +470,6 @@
       });
     }
 
-    // ★新機能：もう一度遊ぶボタンが押された時の処理
     function playAgain() {
       playSound('flip');
       document.getElementById('result-modal').style.display = 'none';
@@ -495,40 +494,37 @@
       const { cards, scores, currentTurn, players, theme } = state;
       const board = document.getElementById('game-board');
       
-      // ★新機能：「トランプ」テーマの時は自動でカジノ背景にする！
       if (theme === 'トランプ' || theme === 'カード') {
         document.body.className = 'theme-cards';
       } else {
         document.body.className = `theme-${myUiTheme}`;
       }
 
-      // ★新機能：カードの枚数に合わせて、綺麗な長方形になるように列数を自動計算！
+      // =========================================
+      // ★超重要：カードの列数を美しく計算する魔法！
+      // =========================================
       const totalCards = cards.length;
-      let cols = Math.ceil(Math.sqrt(totalCards));
-      
-      // 綺麗に割り切れる数字を探す
-      for (let i = Math.ceil(Math.sqrt(totalCards)); i <= totalCards; i++) {
-        if (totalCards % i === 0) {
-          cols = i;
-          break;
-        }
-      }
-      
-      // 横に広がりすぎないように最大列数を調整
-      if (totalCards === 12) cols = 4;
-      else if (totalCards === 16) cols = 4;
-      else if (totalCards === 20) cols = 5;
-      else if (totalCards === 24) cols = 6;
-      else if (totalCards === 30) cols = 6;
-      else if (totalCards === 36) cols = 6;
-      else if (totalCards === 40) cols = 8;
-      else if (totalCards === 42) cols = 7;
-      else if (totalCards === 50) cols = 10;
-      else if (totalCards > 50) cols = 10;
+      let cols = 4; // 最低でも4列
 
-      // グリッドのデザインを適用する
-      board.style.gridTemplateColumns = `repeat(${cols}, minmax(60px, 80px))`;
-      board.style.width = 'fit-content'; // 中央にギュッと寄せる
+      // 枚数に応じて、一番長方形（正方形）に近くなる列数を決める
+      if (totalCards <= 12) {
+        cols = 4; 
+      } else if (totalCards <= 20) {
+        cols = 5; 
+      } else if (totalCards <= 30) {
+        cols = 6; 
+      } else if (totalCards <= 42) {
+        cols = 7; 
+      } else if (totalCards <= 56) {
+        cols = 8; 
+      } else if (totalCards <= 72) {
+        cols = 9; 
+      } else {
+        cols = 10; // 100枚の時は10x10になる
+      }
+
+      // 計算した列数を使ってグリッドを作成（最大95pxで大きく見やすく！）
+      board.style.gridTemplateColumns = `repeat(${cols}, minmax(40px, 95px))`;
 
 
       let p1Name = "Player 1";
@@ -678,7 +674,6 @@
     });
 
     function backToMenu() {
-      // メニューに戻る時は元のテーマに戻す
       document.body.className = `theme-${myUiTheme}`;
       
       document.getElementById('result-modal').style.display = 'none';

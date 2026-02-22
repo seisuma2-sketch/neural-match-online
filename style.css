@@ -1,5 +1,5 @@
 /* =========================================
-   style.css (第11弾：画面揺れ防止＆トランプテーマ / 真の完全フル展開版)
+   style.css (第12弾：トランプ完全対応＆正方形維持 / 真の完全フル展開版)
    ========================================= */
 
 /* =========================================
@@ -109,14 +109,14 @@ body.theme-deepsea {
   --font-family: 'Courier New', Courier, monospace;
 }
 
-/* ★新設 ⑤ トランプ専用テーマ（カジノのグリーンテーブル） */
+/* ⑤ トランプ専用テーマ（カジノのグリーンテーブル） */
 body.theme-cards {
-  --bg-gradient: radial-gradient(circle at center, #0f5132, #002200); /* カジノグリーン */
+  --bg-gradient: radial-gradient(circle at center, #0f5132, #002200); 
   --bg-pattern-color: rgba(255, 255, 255, 0.05); 
   --text-color: #ffffff;
-  --title-glow: rgba(255, 215, 0, 0.8); /* ゴールドの輝き */
-  --title-accent-1: #ffd700; /* ゴールド */
-  --title-accent-2: #ff0000; /* レッド */
+  --title-glow: rgba(255, 215, 0, 0.8); 
+  --title-accent-1: #ffd700; 
+  --title-accent-2: #ff0000; 
   --glass-bg: rgba(0, 30, 0, 0.7);
   --glass-border: rgba(255, 215, 0, 0.3);
   --label-color: #ffd700;
@@ -129,7 +129,7 @@ body.theme-cards {
   --btn-cpu-bg: linear-gradient(45deg, #388e3c, #1b5e20);
   --btn-local-bg: linear-gradient(45deg, #7b1fa2, #4a148c);
   --btn-settings-bg: rgba(255, 215, 0, 0.1);
-  --card-bg: repeating-linear-gradient(45deg, #b71c1c, #b71c1c 10px, #d32f2f 10px, #d32f2f 20px); /* トランプの裏面風 */
+  --card-bg: repeating-linear-gradient(45deg, #b71c1c, #b71c1c 10px, #d32f2f 10px, #d32f2f 20px); 
   --modal-glass-bg: rgba(0, 20, 0, 0.95);
   --modal-glow: rgba(255, 215, 0, 0.4);
   --font-family: 'Georgia', serif;
@@ -139,7 +139,6 @@ body.theme-cards {
 /* =========================================
    1. 全体の基本設定と動く背景
    ========================================= */
-/* ★重要：画面の揺れを防ぐための設定（overflow-y: scroll） */
 html {
   overflow-y: scroll; 
   overflow-x: hidden;
@@ -208,8 +207,8 @@ body {
   border-radius: 25px; 
   display: inline-block; 
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); 
-  width: 100%; /* 横幅を最適化 */
-  max-width: 600px; /* PCでは広めに */
+  width: 100%; 
+  max-width: 600px; 
   animation: fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1); 
   transition: all 0.5s ease;
   position: relative;
@@ -628,7 +627,6 @@ select:focus {
   border: 1px solid var(--glass-border);
 }
 
-/* ★重要：ターンメッセージの高さを固定して画面のガタつきを防止 */
 #turn-msg {
   height: 40px; 
   display: flex;
@@ -644,13 +642,17 @@ select:focus {
   gap: 12px; 
   justify-content: center; 
   margin: 0 auto;
-  /* 横幅が伸びすぎないように調整 */
-  max-width: 1000px;
+  width: 100%;
+  max-width: 1100px; /* カードが多い時用に少し広げる */
   padding-bottom: 40px;
 }
 
 .card { 
+  /* ★重要：正方形を絶対に維持する魔法 */
   aspect-ratio: 1 / 1; 
+  width: 100%;
+  /* どんなに画面が広くても、カードが大きくなりすぎないように制限 */
+  max-width: 95px; 
   background: var(--card-bg); 
   border-radius: 12px; 
   cursor: pointer; 
@@ -691,13 +693,29 @@ select:focus {
   transform: rotateY(180deg) scale(0.95); 
 }
 
+/* ★AI生成画像などの通常画像 */
 .card img { 
   width: 100%; 
   height: 100%; 
-  object-fit: cover; 
+  object-fit: cover; /* 画像を正方形に切り取る */
   display: none; 
   border-radius: 10px; 
 }
+
+/* ★超重要：トランプテーマの時だけ、画像を切り取らずに全体を表示する！ */
+.theme-cards .card img {
+  object-fit: contain; /* はみ出さずに全体を縮小して入れる */
+  background-color: white; /* 隙間を白で埋めて、本物のトランプっぽくする */
+  padding: 4px; /* フチに少し余白を作る */
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+/* トランプの時は、めくったカードの背景を白にする */
+.theme-cards .card.open {
+  background-color: white;
+}
+
 
 .card.open img, 
 .card.matched img { 
