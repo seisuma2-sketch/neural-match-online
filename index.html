@@ -530,6 +530,7 @@
       document.getElementById('setup-screen').style.display = 'none';
       document.getElementById('home-screen').style.display = 'none';
       document.getElementById('game-screen').style.display = 'block';
+      document.getElementById('game-board').innerHTML = '';
     });
 
     socket.on('update_game', (state) => {
@@ -607,32 +608,40 @@
         board.classList.add('disabled'); 
       }
 
-      board.innerHTML = '';
-      
+      if (board.children.length === 0) {
+        cards.forEach((card) => {
+          const div = document.createElement('div');
+          div.className = 'card';
+          div.id = `card-elem-${card.id}`; // 固有のIDを付与
+  
+          const img = document.createElement('img');
+          img.src = card.val; // この時点でブラウザが裏で全画像を読み込み始める
+          div.appendChild(img);
+  
+          div.onclick = () => {
+            if (currentTurn === myId || currentTurn.startsWith(myId)) {
+              playSound('flip');
+              socket.emit('flip_card', card.id);
+            }
+          };
+          
+          board.appendChild(div);
+        });
+      }
+  
+      // ② 毎回作り直さず、すでにあるカードの「状態」だけを更新する
       cards.forEach((card) => {
-        const div = document.createElement('div');
-        div.className = 'card';
-        
-        if (card.isOpen) {
-          div.classList.add('open');
-        }
-        
-        if (card.isMatched) {
-          div.classList.add('matched');
-        }
-
-        const img = document.createElement('img');
-        img.src = card.val;
-        div.appendChild(img);
-
-        div.onclick = () => {
-          if (currentTurn === myId || currentTurn.startsWith(myId)) {
-            playSound('flip');
-            socket.emit('flip_card', card.id);
+        const div = document.getElementById(`card-elem-${card.id}`);
+        if (div) {
+          div.className = 'card'; // 一旦クラスをリセット
+          
+          if (card.isOpen) {
+            div.classList.add('open');
           }
-        };
-        
-        board.appendChild(div);
+          if (card.isMatched) {
+            div.classList.add('matched');
+          }
+        }
       });
     });
 
